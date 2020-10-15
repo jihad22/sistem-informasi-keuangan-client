@@ -1,0 +1,45 @@
+<div class="modal fade" id="modalEditSumberPendapatan" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel"
+  aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticModalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3 class="text-center title-2">Edit Sumber Pendapatan</h3>
+        <hr>
+        <form id="formEditSumberPendapatan" method="POST" novalidate="novalidate">
+        	<div class="form-group">
+        		<input type="hidden" value="" id="edit_id_sumber_pendapatan" name="">
+        	</div>
+          <label for="" class="control-label mb-1">Sumber</label>
+          <div class="form-group">
+            <input id="edit_sumber_pendapatan" name="sumber_pendapatan" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+          </div>
+          <hr>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-primary btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+	$('#modalEditSumberPendapatan').on('shown.bs.modal', function (e) {
+		var button = $(e.relatedTarget);
+    var id = button.data('id');
+    API_REQUEST('one/sumber-pendapatan/', 'GET', token, id, '').done((res)=>{
+      $('#edit_id_sumber_pendapatan').val(res.id_sumber_pendapatan);
+      $('#edit_sumber_pendapatan').val(res.sumber_pendapatan);
+    });
+	});
+</script>

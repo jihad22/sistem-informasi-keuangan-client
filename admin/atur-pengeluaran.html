@@ -1,0 +1,216 @@
+<!--#include file="all-head.html"-->
+<div class="row">
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <form id="submitAturPembiayaan" method="POST" novalidate="novalidate">
+          <label for="" class="control-label mb-1">Pengeluaran</label>
+          <div class="form-group">
+            <small class="text-muted text-justify">Jenis Pengeluaran Seperti Pembiayaan dll.</small>
+            <input id="pembiayaan" name="pembiayaan" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+          </div>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-dark btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="table-responsive-lg">
+      <table class="datatables table table-sm table-hover table-bordered table-striped">
+        <thead class="">
+          <tr>
+            <th>No</th>
+            <th>ID</th>
+            <th>Jenis Pengeluaran</th>
+            <th>Tindakan</th>
+          </tr>
+        </thead>
+        <tbody id="dataPembiayaan"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<h3 class="title">Ayat Jurnal</h3>
+<div class="row">
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <form id="submitAturAyatJurnal" method="POST" novalidate="novalidate">
+          <label for="" class="control-label mb-1">Jenis Pengeluaran</label>
+          <div class="form-group">
+            <select class="form-control" id="optionPengeluaran"></select>
+          </div>
+          <label for="" class="control-label mb-1">Ayat Jurnal</label>
+          <div class="form-group">
+            <input id="ayat_jurnal" name="ayat_jurnal" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+          </div>
+          <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
+            <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="table-responsive-lg">
+      <table class="datatables table table-sm table-hover table-bordered table-striped">
+        <thead class="">
+          <tr>
+            <th>No</th>
+            <th>ID</th>
+            <th>Pembiayaan</th>
+          </tr>
+        </thead>
+        <tbody id="dataAyatJurnal"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function(e) {
+    $('#appendModalHere').load("modals/modal-edit-atur-pembiayaan.html");
+    $('#appendModalHereSlot').load("modals/modal-edit-atur-ayatjurnal.html");
+  });
+  function AllPengeluaran() {
+    API_REQUEST('all/pembiayaan', 'GET', token, '', '').done(function(r){
+      var html = '';
+      var forOption = '';
+      var no = 1;
+      //console.log(r);
+      $.each(r, function(k, v) {
+        html += `<tr>
+          <td>${ no++ }</td>
+          <td>${ v.id_pembiayaan }</td>
+          <td>${ v.pembiayaan }</td>
+          <td>
+            <button class="btn btn-sm btn-warning text-white" data-id="${ v.id_pembiayaan }" data-toggle="modal" data-target="#modalEditAturPembiayaan"><i class="fa fa-edit"></i></button>
+          </td>
+        </tr>`;
+        forOption += `<option value="${ v.id_pembiayaan }">${ v.pembiayaan }</option>`;
+      });
+      $('#dataPembiayaan').html(html);
+      $('#optionPengeluaran').html('<option value="0">Jenis Pengeluaran</option>' + forOption);
+    });
+  }
+  //panggil fungsi penampil data
+  AllPengeluaran();
+  //ayat jurnal
+  function AyatJurnal() {
+    API_REQUEST('all/ayat-jurnal', 'GET', token, '', '').done(function(r){
+      var html = '';
+      var no = 1;
+      //console.log(r);
+      $.each(r, function(k, v) {
+        function AyatJurnal() {
+          var html = '';
+          $.each(v.AyatJurnals, function(i, l){
+            html += `<li>
+              <div class="row">
+                <div class="col-sm-10">${l.ayat_jurnal}</div>
+                <div class="col-sm-2">
+                  <button class="btn btn-sm btn-warning text-white" data-id="${ l.id_ayat_jurnal }" data-toggle="modal" data-target="#modalEditAturAyatJurnal"><i class="fa fa-edit"></i></button>
+                </div>
+              </div>
+            </li>`;
+          });
+          return '<ul>'+ html +'</ul>';
+        }
+        html += `<tr>
+          <td>${ no++ }</td>
+          <td>${ v.pembiayaan }</td>
+          <td>${ AyatJurnal() }</td>
+        </tr>`;
+      });
+      $('#dataAyatJurnal').html(html);
+    });
+  }
+  AyatJurnal();
+  //ADD DATA
+  //Submit Pembiayaan
+  $(document).on('submit', '#submitAturPembiayaan', function(e){
+    e.preventDefault();
+    var data = JSON.stringify({
+      id_pembiayaan:'',
+      pembiayaan:$('#pembiayaan').val()
+    });
+    API_REQUEST('add/pembiayaan', 'POST', token, '', data).done(function(){
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Created'
+      }, AllPengeluaran());
+    });
+  });
+  //Submit Ayat jurnal
+  $(document).on('submit', '#submitAturAyatJurnal', function(e){
+    e.preventDefault();
+    var data = JSON.stringify({
+      id_ayat_jurnal:'',
+      ayat_jurnal: $('#ayat_jurnal').val(),
+      pembiayaan_id: parseInt($('#optionPengeluaran option:selected').val())
+    });
+    API_REQUEST('add/ayat-jurnal', 'POST', token, '', data).done(function(){
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Created'
+      }, AyatJurnal());
+    });
+  });
+  //submit sub ayat jurnal
+  $(document).on('submit', '#submitAturSubAyatJurnal', function(e) {
+    e.preventDefault();
+    var data = JSON.stringify({
+      id_subayat_jurnal:'',
+      sub_ayat_jurnal: $('#sub_ayat_jurnal').val(),
+      ayat_jurnal_id: parseInt($('#optionAyatJurnal option:selected').val())
+    });
+    API_REQUEST('add/subayat-jurnal', 'POST', token, '', data).done(function(){
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Created'
+      }, SubAyatJurnal());
+    });
+  });
+  //EDIT DATA
+  //submit edit pembiayaan
+  $(document).on('submit', '#submitEditAturPembiayaan', function(e){
+    e.preventDefault();
+    var data = JSON.stringify({
+      id_pembiayaan:parseInt($('#id_pembiayaan_e').val()),
+      pembiayaan:$('#pembiayaan_e').val()
+    });
+    API_REQUEST('update/pembiayaan', 'PUT', token, '', data).done(function(){
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Created'
+      }, AllPengeluaran());
+    });
+  });
+  //submit edit ayat jurnal
+  $(document).on('submit', '#submitEditAturAyatJurnal', function(e){
+    e.preventDefault();
+    var data = JSON.stringify({
+      id_ayat_jurnal:parseInt($('#id_ayat_jurnal_e').val()),
+      ayat_jurnal: $('#ayat_jurnal_e').val(),
+      pembiayaan_id: parseInt($('#option_pengeluaran_e option:selected').val())
+    });
+    API_REQUEST('update/ayat-jurnal', 'PUT', token, '', data).done(function(){
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Created'
+      }, AyatJurnal());
+    });
+  });
+</script>
+
+<!--#include file="all-foot.html"-->

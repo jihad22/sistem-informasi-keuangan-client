@@ -1,0 +1,120 @@
+<!--#include file="all-head.html"-->
+
+<div class="row">
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <form id="submitRole" method="post" novalidate="novalidate">
+          <div class="form-group">
+            <label for="role" class="control-label mb-1">Jenis Pengguna</label>
+            <input id="roleValue" name="role" type="text" class="form-control" aria-required="true" aria-invalid="false" value="" placeholder="Cth: Tata Usaha">
+          </div>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp;
+              <span id="payment-button-amount">SIMPAN</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-9">
+    <div class="table-responsive-lg">
+      <table class="datatables table table-sm table-hover table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Kode</th>
+            <th>Jenis Pengguna</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="role"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+  //load all role data
+  function ShowAllRole() {
+    API_REQUEST('all/role','GET', token, '','').done(function(response){
+      let html = '';
+      var no = 0;
+      response.forEach(el => {
+        html += `<tr>
+          <td>${no += 1}</td>
+          <td>${el.id_role}</td>
+          <td>${el.role}</td>
+          <td>
+            <button id="editRole" data-id="${el.id_role}" class="text-white btn btn-sm btn-info"><i class="fa fa-pencil-alt"></i> Edit</button>
+          </td></tr>`;
+      });
+      $('#role').html(html);
+    }).always(function(){
+      console.log("Mission Completed");
+    });
+  }
+  //show all role
+  ShowAllRole();
+  //submit Role
+  $(document).on('submit', '#submitRole', function(e){
+    e.preventDefault();
+    var IDRole = firstChar($('#roleValue').val());
+    var Role = $('#roleValue').val().toUpperCase();
+    let data = JSON.stringify({ id_role: IDRole, role: Role});
+    API_REQUEST('add/role','POST', token, '',data).done(function(){
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'User Role Has Been Added'
+      }, ShowAllRole());
+    });
+  });
+  
+  //open modal edit when user click the edit button and append data to form value
+  $(document).on('click', '#editRole', function(e){
+    e.preventDefault();
+    let idRole = $(this).data('id');
+    API_REQUEST('one/role/','GET', token, idRole,'').done(function(response){
+      $('#staticModal').modal();
+      $('.modal-body').html(`<h3 class="text-center title-2">Role User</h3>
+        <hr>
+        <form id="submitEditRole" method="" novalidate="novalidate">
+          <input id="UIdRoleValue" name="id_role" type="hidden" value="${ idRole }">
+          <div class="form-group">
+            <label for="role" class="control-label mb-1">Jenis User</label>
+            <input id="URoleValue" name="role" type="text" class="form-control" aria-required="true" aria-invalid="false" value="${ response[0].role }">
+          </div>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp;
+              <span id="payment-button-amount">SIMPAN</span>
+              <span id="payment-button-sending" style="display:none;">Sending…</span>
+            </button>
+          </div>
+        </form>`);
+    });
+  });
+  //load modal form modals dir
+  $(document).ready(function () {
+    $('#appendModalHere').load('modals/modal-user.html');
+  });
+  $(document).on('submit', '#submitEditRole', function (e) {
+    e.preventDefault();
+    var IDRole = firstChar($('#').val());
+    let data = JSON.stringify({
+      id_role : $('#UIdRoleValue').val(),
+      role : $('#roleValue').val().toUpperCase()
+    });
+    API_REQUEST('update/role','PUT', token, '', data).done(function(response){
+      Swal.fire({
+          icon: 'success',
+          title: 'Ok',
+          text: 'Role User Was Changed'
+      }, ShowAllRole());
+    });
+  });
+</script>
+<!--#include file="all-foot.html"-->

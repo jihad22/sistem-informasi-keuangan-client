@@ -1,0 +1,138 @@
+<!--#include file="all-head.html"-->
+<div class="row">
+  <div class="table-responsive-lg">
+    <table class="datatables table table-hover table-bordered table-striped">
+      <legend>
+        <button type="button" class=" btn btn-secondary mb-1" data-toggle="modal" data-target="#ModalUserAdd">
+          <i class="fa fa-user-plus"></i> Tambah Pengguna
+        </button>
+      </legend>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama</th>
+          <th>Tgl.Lahir</th>
+          <th>JK</th>
+          <th>Alamat</th>
+          <th>Jenis</th>
+          <th>No.HP</th>
+          <th>Email</th>
+          <th>Username</th>
+          <th>Terdaftar</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="userList"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  //function will call after action is finished
+  function ShowAllUser() {
+    API_REQUEST('all/user','GET', token, '','').done(function(response){
+      var no = 0;
+      var html = '';
+      response.forEach(el => {
+        var date = new Date(el.birth_data);
+        var num = no+=1;
+        var splitTgl = el.create_at.split("T");
+        html += '<tr>'
+          + '<td>' + num +'</td>'
+          + '<td>' + el.name + '</td>'
+          + '<td>' + el.birth_date + '</td><td>' + el.gen + '</td><td>' + el.address + '</td>'
+          + '<td>' + el.Role.role + '</td><td>' + el.phone + '</td><td>' + el.email + '</td>'
+          + '<td>' + el.username + '</td><td>' + splitTgl[0] + '</td>'
+          + '<td>'
+            + '<div class="btn-group">'
+              + '<button class="text-white btn btn-sm btn-warning" id="editUser" data-user="' + el.id_user + '" data-toggle="modal" data-target="#ModalUserEdit"><i class="fa fa-edit"></i></button>'
+              //+ '<button class="text-white btn btn-sm btn-danger" id="deleteUser" data-id="' + el.id_user + '"><i class="fa fa-trash"></i></button>'
+            + '</div>'
+          + '</td>'
+          +'</tr>';
+      });
+      $('#userList').html(html);
+    });
+  }
+  //call the function for showing all users
+  ShowAllUser();
+  //post user
+  $(document).on('submit', '#submitUser', function(e){
+    e.preventDefault();
+    let data = JSON.stringify({
+      id_user:"",
+      name:$('#name').val(),
+      birth_date:$('#birthdate').val(),
+      gen:$('#Gender option:selected').val(),
+      address:$('#address').val(),
+      role_id: parseInt($('#SelectUserRole option:selected').val()),
+      phone:$('#phone').val(),
+      email:$('#email').val(),
+      username:$('#username').val(),
+      password:$('#password').val(),
+      image:""
+    });
+    API_REQUEST('add/user','POST', token, '', data).done(function(){
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Data Was Added'
+      }, ShowAllUser());
+    });
+  });
+  //delete user
+  $(document).on('click', '#deleteUser', function(e){
+    e.preventDefault();
+    let id = $(this).data('id');
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      closeOnConfirm: false
+    }).then((result) => {
+      if (result.value == true) {
+        API_REQUEST('delete/user/','DELETE', token, id, '').done(function(){
+          Swal.fire({
+            icon: 'success',
+            title: 'Ok',
+            text: 'Data Was Deleted'
+          }, ShowAllUser());
+        });
+      } else {
+        result.dismiss;
+      }
+    });
+  });
+  //load modal form modals dir
+  $(document).ready(function () {
+    $('#appendModalHere').load('modals/modal-user.html');
+  });
+  //submit edit user
+  $(document).on('submit', '#submitEditUser', function(e){
+    e.preventDefault();
+    let id_users = $('#id_usere').val();
+    let data = JSON.stringify({
+      id_user: parseInt(id_users),
+      name: $('#namee').val(),
+      birth_date: $('#birthdatee').val(),
+      gen: $('#gendere option:selected').val(),
+      address: $('#addresse').val(),
+      role_id: parseInt($('#SelectRole option:selected').val()),
+      phone: $('#phonee').val(),
+      email: $('#emaile').val()
+    });
+    API_REQUEST('update/user','PUT', token, '', data).done(function () {
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Data Was Updated'
+      }, ShowAllUser());
+    });
+  });
+</script>
+
+<!--#include file="all-foot.html"-->

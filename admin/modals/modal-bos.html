@@ -1,0 +1,70 @@
+<div class="modal fade" id="modalBos" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel"
+  aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticModalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3 class="text-center title-2">Edit Bos</h3>
+        <hr>
+        <form id="submitEditBos" method="post" novalidate="novalidate">
+          <input type="hidden" id="idBosValueEdit" value="" name="">
+          <label for="danaMasukValue" class="control-label mb-1">Periode</label>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input id="periode1ValueEdit" name="periode1" type="text" class="yearpicker form-control" aria-required="true"
+                  aria-invalid="false" value="">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <input id="periode2ValueEdit" name="periode2" type="text" class="yearpicker form-control" aria-required="true"
+                  aria-invalid="false" value="">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="danaMasukValueEdit" class="control-label mb-1">Nominal Dana Bos</label>
+            <input id="danaMasukValueEdit" name="dana_masuk" type="text" class="form-control" aria-required="true"
+              aria-invalid="false" value="">
+            <small class="form-text text-muted">Rumus:<br>Nominal Dana BOS x Jumlah Siswa</small>
+          </div>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp;
+              <span id="payment-button-amount">SIMPAN</span>
+              <span id="payment-button-sending" style="display:none;">Sending…</span>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  //year picker input periode pembelajaran
+  $('.yearpicker').yearpicker();
+  //masking inputan nominal
+  $('#danaMasukValueEdit').maskMoney({ precision: 0 });
+  //edit bos
+  $('#modalBos').on('show.bs.modal', function (e) {
+    let button = $(e.relatedTarget);
+    let id_bos = button.data('bos');
+    //console.log(id_komite);
+    API_REQUEST('one/bos/', 'GET', token, parseInt(id_bos), '').done((response) => {
+      var data = response[0].periode.split("/");
+      document.getElementById("periode1ValueEdit").value = data[0];
+      document.getElementById("periode2ValueEdit").value = data[1];
+      document.getElementById("idBosValueEdit").value = response[0].id_bos;
+      document.getElementById("danaMasukValueEdit").value = response[0].dana_masuk;
+    });
+  });
+</script>

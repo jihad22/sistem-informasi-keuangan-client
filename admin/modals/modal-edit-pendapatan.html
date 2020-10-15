@@ -1,0 +1,119 @@
+<div class="modal fade" id="modalEditPendapatan" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticModalLabel">
+          Ubah Pendapatan
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="submitEditPendapatan" method="" novalidate="novalidate">
+          <input id="id_pendapatan_e" type="hidden" name="">
+          <div class="form-group">
+            <label for="jenis_pendapatan_id_e" class="control-label mb-1">Jenis Pendapatan</label>
+            <select id="jenis_pendapatan_id_e" class="form-control"></select>
+          </div>
+          <div class="form-group">
+            <label for="sumber_pendapatan_id_e" class="control-label mb-1">Sumber Pendapatan</label>
+            <select id="sumber_pendapatan_id_e" class="form-control"></select>
+          </div>
+          <label class="control-label mb-1">
+            <small class="text-danger">Jika tidak ada variabel pengali biarkan nilai tetap <b>1</b></small>
+          </label>
+          <br>
+          <div class="form-group">
+            <label class="control-label mb-1">Nominal</label>
+            <input id="nominal_e" name="nominal_e" type="text" class="currency form-control" aria-required="true" aria-invalid="false" value="1">
+          </div>
+          <label class="control-label mb-1">Jumlah Siswa</label>
+          <div class="form-group">
+            <select id="jumlah_siswa_id_e" class="form-control" name="jumlah_siswa"></select>
+          </div>
+          <div class="row">
+            <div class="col-4">
+              <label class="control-label mb-1">Var 1</label>
+              <div class="form-group">
+                <input id="var1_e" name="var1" type="number" class="form-control" aria-required="true" aria-invalid="false" value="1">
+              </div>
+            </div>
+            <div class="col-4">
+              <label class="control-label mb-1">Var 2</label>
+              <div class="form-group">
+                <input id="var2_e" name="var2" type="number" class="form-control" aria-required="true" aria-invalid="false" value="1">
+              </div>
+            </div>
+            <div class="col-4">
+              <label class="control-label mb-1">Var 3</label>
+              <div class="form-group">
+                <input id="var3_e" name="var3" type="number" class="form-control" aria-required="true" aria-invalid="false" value="1">
+              </div>
+            </div>
+          </div>
+          <label class="control-label mb-1">
+            <small class="text-muted">
+              var1, var2, var3 diganti ketika ingin mengalikan dengan bulan, atau nilai tertentu
+            </small>
+          </label>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp;
+              <span id="payment-button-amount">SIMPAN</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $('#modalEditPendapatan').on('shown.bs.modal', function(e){
+    var button = $(e.relatedTarget);
+    var id = button.data('id');
+    API_REQUEST('one/pendapatan/', 'GET', token, id, '').done(function(response){
+      $('#id_pendapatan_e').val(response.id_pendapatan);
+      $('#nominal_e').val(response.Sumber.nominal_angsuran);
+      $('#var1_e').val(response.Sumber.var1);
+      $('#var2_e').val(response.Sumber.var2);
+      $('#var3_e').val(response.Sumber.var3);
+      //append select option jumlah siswa
+      API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done((res) => {
+        var Html = '';
+        $.each(res, (index, el) => {
+          if (el.id_jenis_pendapatan === response.JenisPendapatan.id_jenis_pendapatan) {
+            Html += `<option value="${ el.id_jenis_pendapatan }" selected>${ el.jenis_pendapatan }</option>`;
+          } else {
+            Html += `<option value="${ el.id_jenis_pendapatan }">${ el.jenis_pendapatan }</option>`;
+          }
+        });
+        $('#jenis_pendapatan_id_e').html("<option value='0'>Jenis Sumber</option>" + Html);
+      });
+      //append select option jumlah siswa
+      API_REQUEST('all/sumber-pendapatan', 'GET', token, '', '').done((res) => {
+        var spHtml = '';
+        $.each(res, (index, el) => {
+          if (el.id_sumber_pendapatan === response.Sumber.SumberPendapatan.id_sumber_pendapatan) {
+            spHtml += `<option value="${ el.id_sumber_pendapatan }" selected>${ el.sumber_pendapatan }</option>`;
+          } else {
+            spHtml += `<option value="${ el.id_sumber_pendapatan }">${ el.sumber_pendapatan }</option>`;
+          }
+        });
+        $('#sumber_pendapatan_id_e').html("<option value='0'>Sumber</option>" + spHtml);
+      });
+      //append select option jumlah siswa
+      API_REQUEST('all/jumlah-siswa', 'GET', token, '', '').done((res) => {
+        var jsHtml = '';
+        $.each(res, (index, el) => {
+          if (el.id_jm_siswa === response.Sumber.JumlahSiswa.id_jm_siswa) {
+            jsHtml += `<option value="${ el.id_jm_siswa }-${ el.jumlah_siswa }" selected>TA. ${ el.tahun_ajaran }, Siswa : ${  el.jumlah_siswa } Org</option>`;
+          } else {
+            jsHtml += `<option value="${ el.id_jm_siswa }-${ el.jumlah_siswa }">TA. ${ el.tahun_ajaran }, Siswa : ${  el.jumlah_siswa } Org</option>`;
+          }
+        });
+        $('#jumlah_siswa_id_e').html("<option value='0-1'>1 - Jumlah Siswa</option>" + jsHtml);
+      });
+    });
+  });
+</script>

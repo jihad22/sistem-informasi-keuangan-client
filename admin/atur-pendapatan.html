@@ -1,0 +1,252 @@
+<!--#include file="all-head.html"-->
+
+<div class="row">
+
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <form id="submitJenisPendapatan" method="POST" novalidate="novalidate">
+          <label for="" class="control-label mb-1">Jenis Pendapatan</label>
+          <div class="form-group">
+            <input id="jenis_pendapatan" name="jenis_pendapatan" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+            <small class="text-muted text-justify">Jenis Pendapatan Seperti Komite</small>
+          </div>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-dark btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-9">
+    <div class="table-responsive-lg">
+      <table class="datatables table table-sm table-hover table-bordered table-striped">
+        <thead class="">
+          <tr>
+            <th>No</th>
+            <th>ID</th>
+            <th>Jenis Pendapatan</th>
+            <th>Tindakan</th>
+          </tr>
+        </thead>
+        <tbody id="dataJenisPendapatan"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  //add modal window
+  $(document).ready(function () {
+    $('#appendModalHere').load('modals/modal-edit-autur-sumber.html');
+    $('#appendModalHereSlot').load('modals/modal-edit-jpendapatan.html');
+  });
+
+  function ShowAllPendaptan(){
+    API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done((response)=>{
+      var html = '';
+      var no = 1;
+      $.each(response, (index, el) => {
+        html += `<tr>
+          <td>${ no++ }</td>
+          <td>${ el.id_jenis_pendapatan }</td>
+          <td>${ el.jenis_pendapatan }</td>
+          <td>
+            <div class="btn-group" role="group">
+              <button class="text-white btn btn-sm btn-warning" data-id="${ el.id_jenis_pendapatan }" data-toggle="modal" data-target="#modalEditJenisPendapatan"><i class="fa fa-edit"></i> Ubah</button>
+              <button class="text-white btn btn-sm btn-danger" id="deleteJP" data-id="${ el.id_jenis_pendapatan }"><i class="fa fa-trash"></i> Hapus</button>
+            </div>
+          </td>
+        </tr>`;
+      });
+      $("#dataJenisPendapatan").html(html);
+    });
+  }
+  //show all
+  ShowAllPendaptan();
+  //submit pendapatan
+  $(document).on('submit', '#submitJenisPendapatan', (e)=>{
+    e.preventDefault();
+    var data = JSON.stringify({
+      id_jenis_pendapatan : '',
+      jenis_pendapatan : $('#jenis_pendapatan').val()
+    });
+    API_REQUEST('add/jenis-pendapatan', 'POST', token, '', data).done(()=>{
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Created'
+      }, ShowAllPendaptan());
+    })
+  });
+  //submit edit jenis pendapatan
+  $(document).on('submit','#submitEditjenisPendapatan', (e)=>{
+    e.preventDefault();
+    var data = JSON.stringify({
+      id_jenis_pendapatan : parseInt($('#id_jenis_pendapatan_edit').val()),
+      jenis_pendapatan : $('#jenis_pendapatan_edit').val()
+    });
+    API_REQUEST('update/jenis-pendapatan', 'PUT', token, '', data).done(()=>{
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Updated'
+      }, ShowAllPendaptan());
+    });
+  });
+  $(document).on('click', '#deleteJP', function(e){
+    e.preventDefault()
+    var id = $(this).data('id');
+    Swal.fire({
+      title: 'Apakah anda yakin menghapus data ini?',
+      text: '',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      closeOnConfirm: false
+    }).then((result) => {
+      if (result.value == true) {
+        API_REQUEST('delete/jenis-pendapatan/', 'DELETE', token, id, '').done(function () {
+          Swal.fire({
+            icon: 'success',
+            title: 'Ok',
+            text: 'Deleted'
+          }, ShowAllPendaptan());
+        });
+      } else {
+        result.dismiss;
+      }
+    });
+  })
+</script>
+
+<hr>
+
+<div class="row">
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <form id="formSumberPendapatan" method="POST" novalidate="novalidate">
+          <label for="" class="control-label mb-1">Sumber</label>
+          <div class="form-group">
+            <input id="sumber_pendapatan" name="sumber_pendapatan" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+            <small class="text-muted text-justify">Sumber Pendapatan Sekolah Seperti Bimbingan atau Seperti Usaha</small>
+          </div>
+          <hr>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-primary btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="table-responsive-lg">
+      <table class="datatables table table-sm table-hover table-bordered table-striped">
+        <thead class="bg-primary">
+          <tr>
+            <th>No</th>
+            <th>ID</th>
+            <th>Sumber Pendapatan</th>
+            <th>Tindakan</th>
+          </tr>
+        </thead>
+        <tbody id="dataSumberPendapatan"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  function ShowAllJenisSumber() {
+    API_REQUEST('all/sumber-pendapatan', 'GET', token, '', '').done((response) => {
+      var no = 1;
+      var html = '';
+      $.each(response, (key, el) => {
+        html += `<tr>
+          <td>${ no++ }</td>
+          <td>${ el.id_sumber_pendapatan }</td>
+          <td>${ el.sumber_pendapatan }</td>
+          <td>
+            <div class="btn-group" role="group">
+              <button class="text-white btn btn-sm btn-warning" id="editSP" data-id="${ el.id_sumber_pendapatan }" data-toggle="modal" data-target="#modalEditSumberPendapatan"><i class="fa fa-edit"></i> Ubah</button>
+              <button class="text-white btn btn-sm btn-danger" id="deleteSP" data-id="${ el.id_sumber_pendapatan }"><i class="fa fa-trash"></i> Hapus</button>'
+            </div>
+          </td>
+        </tr>`;
+      });
+      $('#dataSumberPendapatan').html(html);
+    });
+  }
+  //panggil fungsi untukmenampilkan semua data
+  ShowAllJenisSumber();
+  //submit sumber pendapatan
+  $(document).on('submit', '#formSumberPendapatan', (e) => {
+    e.preventDefault();
+    var data = JSON.stringify({
+      id_sumber_pendapatan : "",
+      sumber_pendapatan : $('#sumber_pendapatan').val()
+    });
+    API_REQUEST('add/sumber-pendapatan', 'POST', token, '', data).done((r)=>{
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Created'
+      }, ShowAllJenisSumber());
+    })
+  });
+  //delete sumber pendapatan
+  $(document).on('click', '#deleteSP', function (e) {
+    e.preventDefault();
+    var id = $(this).data('id');
+    console.log(id);
+    Swal.fire({
+      title: 'Apakah anda yakin ingin menghapus data ini?',
+      text: '',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Hapus!',
+      closeOnConfirm: false
+    }).then((result) => {
+      if (result.value == true) {
+        API_REQUEST('delete/sumber-pendapatan/', 'DELETE', token, id, '').done(() => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Ok',
+            text: 'Deleted'
+          }, ShowAllJenisSumber());
+        });
+      } else {
+        result.dismiss;
+      }
+    });
+  });
+  //form edit sumber pendapatan
+  $(document).on('submit', '#formEditSumberPendapatan', function(e) {
+    e.preventDefault();
+    var data = JSON.stringify({
+      id_sumber_pendapatan : parseInt($('#edit_id_sumber_pendapatan').val()),
+      sumber_pendapatan : $('#edit_sumber_pendapatan').val()
+    });
+    API_REQUEST('update/sumber-pendapatan', 'PUT', token, '', data).done(function(e){
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Updated'
+      }, ShowAllJenisSumber());
+    });
+  });
+
+</script>
+
+<!--#include file="all-foot.html"-->
