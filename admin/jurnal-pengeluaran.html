@@ -107,16 +107,9 @@
     return jumlah;
 	}
 	$(document).ready(function(){
-		$('#appendModalHere').load('modals/modal-add-jurnal-transaksi.html');
-		$('#appendModalHereSlot').load('modals/modal-edit-jurnal-transaksi.html');
+		$('#appendModalHere').load('modals/modal-add-jurnal-pengeluaran.html');
+		$('#appendModalHereSlot').load('modals/modal-edit-jurnal-pengeluaran.html');
 		//For Option Data
-		var TAOption = '';
-    API_REQUEST('tahun-ajaran/jurnal-transaksi', 'GET', token, '', '').done(function(r){
-    	$.each(r, function(index, el) {
-    		TAOption += `<option value="${ el.tahun_ajaran }">${ el.tahun_ajaran }</option>`
-    	});
-    	$('#TAOption').html('<option value="0">Pilih Periode</option>'+TAOption);
-    });
     var userOption = '';
     API_REQUEST("all/user", 'GET', token, '', '').done(function(r) {
     	$.each(r, function(index, el) {
@@ -148,6 +141,13 @@
 	});
 
 	function AllJurnalTransaksi(){
+		var TAOption = '';
+		API_REQUEST('tahun-ajaran/jurnal-transaksi', 'GET', token, '', '').done(function (r) {
+			$.each(r, function (index, el) {
+				TAOption += `<option value="${el.tahun_ajaran}">${el.tahun_ajaran}</option>`
+			});
+			$('#TAOption').html('<option value="0">Pilih Periode</option>' + TAOption);
+		});
 		jurnalTransaksi.clear();
 		API_REQUEST('/all/jurnal-transaksi', 'GET', token, '','').done(function(res){
 			var no = 1;
@@ -212,21 +212,8 @@
 			});
 		});
 	}
-	$(document).on('submit', '#submitJurnalTransaksi', function(e){
+	$(document).on('submit', '#submitJurnalPengeluaran', function(e){
 		e.preventDefault();
-		//tangkap jumlah siswa kemudian hilangkan karakter tertentu
-		var siswa = $('#jumlah_siswa_id option:selected').val();
-    var dataSplit = siswa.split("-");
-
-    var var1 = $('#useVar1:checked').val();
-    var var2 = $('#useVar2:checked').val();
-    var var3 = $('#useVar3:checked').val();
-
-    var nominal = removeCommaSeparator('#nominal');
-    var jumlah1 = parseInt($('#jumlah1').val());
-    var satuan1 = $('#satuan1').val();
-    var jumlah2 = parseInt($('#jumlah2').val());
-    var satuan2 = $('#satuan2').val();
 
 		var data = JSON.stringify({
 			id_jurnal_transaksi : "",
@@ -236,13 +223,7 @@
 			jenis_pendapatan_id : $('#optionJenisPendapatan option:selected').val(),
 			jenis_pengeluaran_id : parseInt($('#optionJenisPengeluaran option:selected').val()),
 			ayat_jurnal_transaksi_id : parseInt($('#optionAyatJurnalTransaksi option:selected').val()),
-			nominal : nominal,
-			jumlah_siswa_id : parseInt(dataSplit[0]),
-      jm1 : jumlah1,
-	    satuan1 : satuan1,
-	    jm2 : jumlah2,
-	    satuan2 : satuan2,
-      jumlah : Rumus(nominal, dataSplit[1], var1, var2, var3, jumlah1, jumlah2),
+			nominal : removeCommaSeparator('#nominal'),
       status : 0
 		});
 		//console.log(data);
@@ -255,7 +236,7 @@
 		});
 	});
 	//delete jurnal transaksi
-	$(document).on('click', '#deleteJurnalTransaksi', function(e){
+	$(document).on('click', '#deleteJurnalPengeluaran', function(e){
 		e.preventDefault();
     var id = $(this).data('id');
     Swal.fire({
@@ -282,7 +263,7 @@
     });
 	});
 	//update jurnal transaksi
-	$(document).on('submit', '#submitEditJurnalTransaksi', function(e){
+	$(document).on('submit', '#submitEditJurnalPengeluaran', function(e){
 		e.preventDefault();
 		//tangkap jumlah siswa kemudian hilangkan karakter tertentu
 		var siswa = $('#jumlah_siswa_id option:selected').val();
