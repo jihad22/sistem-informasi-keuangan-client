@@ -49,7 +49,9 @@
   function ShowAllPendaptan(){
     API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done((response)=>{
       var html = '';
+      var optionJp = '';
       var no = 1;
+      //console.log(response);
       $.each(response, (index, el) => {
         html += `<tr>
           <td>${ no++ }</td>
@@ -62,8 +64,10 @@
             </div>
           </td>
         </tr>`;
+        optionJp += `<option value="${ el.id_jenis_pendapatan }">${ el.jenis_pendapatan }</option>`;
       });
-      $("#dataJenisPendapatan").html(html);
+      $('#dataJenisPendapatan').html(html);
+      $('#optionJenisPendapatan').html('<option value="0">Jenis Pendapatan</option>'+optionJp);
     });
   }
   //show all
@@ -71,8 +75,9 @@
   //submit pendapatan
   $(document).on('submit', '#submitJenisPendapatan', (e)=>{
     e.preventDefault();
+    var id = firstChar($('#jenis_pendapatan').val());
     var data = JSON.stringify({
-      id_jenis_pendapatan : '',
+      id_jenis_pendapatan : id,
       jenis_pendapatan : $('#jenis_pendapatan').val()
     });
     API_REQUEST('add/jenis-pendapatan', 'POST', token, '', data).done(()=>{
@@ -133,8 +138,12 @@
     <div class="card">
       <div class="card-body">
         <form id="formSumberPendapatan" method="POST" novalidate="novalidate">
-          <label for="" class="control-label mb-1">Sumber</label>
           <div class="form-group">
+            <label for="" class="control-label mb-1">Jenis Pendapatan</label>
+            <select class="form-control" id="optionJenisPendapatan"></select>
+          </div>
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Sumber Pendapatan</label>
             <input id="sumber_pendapatan" name="sumber_pendapatan" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
             <small class="text-muted text-justify">Sumber Pendapatan Sekolah Seperti Bimbingan atau Seperti Usaha</small>
           </div>
@@ -154,9 +163,8 @@
         <thead class="bg-primary">
           <tr>
             <th>No</th>
-            <th>ID</th>
+            <th>Jenis Pendapatan</th>
             <th>Sumber Pendapatan</th>
-            <th>Tindakan</th>
           </tr>
         </thead>
         <tbody id="dataSumberPendapatan"></tbody>
@@ -167,20 +175,29 @@
 
 <script>
   function ShowAllJenisSumber() {
-    API_REQUEST('all/sumber-pendapatan', 'GET', token, '', '').done((response) => {
+    API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done((response) => {
       var no = 1;
       var html = '';
+      //console.log(response);
       $.each(response, (key, el) => {
+        function SumberPendapatan() {
+          var html = '';
+          $.each(el.SumberPendapatan, function(i, l){
+            html += `<li>
+              <div class="row">
+                <div class="col-sm-10">${l.sumber_pendapatan}</div>
+                <div class="col-sm-2">
+                  <button class="btn btn-sm btn-warning text-white" data-id="${ l.id_sumber_pendapatan }" data-toggle="modal" data-target="#modalEditSumberPendapatan"><i class="fa fa-edit"></i></button>
+                </div>
+              </div>
+            </li>`;
+          });
+          return '<ul>'+ html +'</ul>';
+        }
         html += `<tr>
           <td>${ no++ }</td>
-          <td>${ el.id_sumber_pendapatan }</td>
-          <td>${ el.sumber_pendapatan }</td>
-          <td>
-            <div class="btn-group" role="group">
-              <button class="text-white btn btn-sm btn-warning" id="editSP" data-id="${ el.id_sumber_pendapatan }" data-toggle="modal" data-target="#modalEditSumberPendapatan"><i class="fa fa-edit"></i> Ubah</button>
-              <button class="text-white btn btn-sm btn-danger" id="deleteSP" data-id="${ el.id_sumber_pendapatan }"><i class="fa fa-trash"></i> Hapus</button>'
-            </div>
-          </td>
+          <td>${ el.jenis_pendapatan }</id>
+          <td>${ SumberPendapatan() }</td>
         </tr>`;
       });
       $('#dataSumberPendapatan').html(html);
@@ -193,7 +210,8 @@
     e.preventDefault();
     var data = JSON.stringify({
       id_sumber_pendapatan : "",
-      sumber_pendapatan : $('#sumber_pendapatan').val()
+      sumber_pendapatan : $('#sumber_pendapatan').val(),
+      jenis_pendapatan_id : $('#optionJenisPendapatan option:selected').val()
     });
     API_REQUEST('add/sumber-pendapatan', 'POST', token, '', data).done((r)=>{
       Swal.fire({

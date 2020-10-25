@@ -21,52 +21,81 @@ $(document).ready(function () {
   switch (UrlPath) {
     case "user-role":
       $('a').removeClass('active');
+      $('#treeUser').addClass('menu-open');
       $('#userMenu').addClass('active');
+      $('#roleSubMenu').addClass('active');
       $('.pageTitle').html('Role User');
       $('title').html('Role User')
       break;
     case "user":
       $('a').removeClass('active');
       $('#treeUser').addClass('menu-open');
-      $('#userMenu').addClass('active');
+      $('#userSubMenu').addClass('active');
       $('.pageTitle').html('Pengguna');
       $('title').html('Pengguna');
       break;
+    //RAPBM
     case "pendapatan":
       $('a').removeClass('active');
+      $('#treeRAPBM').addClass('menu-open');
       $('#pendapatanMenu').addClass('active');
       $('.pageTitle').html('Pendapatan');
       $('title').html('Pendapatan');
       break;
     case "rab":
       $('a').removeClass('active');
-      //$('#treePengaturan').addClass('menu-open');
+      $('#treeRAPBM').addClass('menu-open');
       $('#rabMenu').addClass('active');
       $('.pageTitle').html('Rencana Anggaran Belanja');
       $('title').html('RAB');
+      break;
+    //JURNAL TRANSAKSI
+    case "jurnal-pendapatan":
+      $('a').removeClass('active');
+      $('#treeLaporanKeuangan').addClass('menu-open');
+      $('#treeJurnalTransaksiMenu').addClass('menu-open');
+      $('#pendapatanMenu').addClass('active');
+      $('.pageTitle').html('Pendapatan');
+      $('title').html('Jurnal Transaksi');
+      break;
+    case "jurnal-pengeluaran":
+      $('a').removeClass('active');
+      $('#treeLaporanKeuangan').addClass('menu-open');
+      $('#treeJurnalTransaksiMenu').addClass('menu-open');
+      $('#pengeluaranMenu').addClass('active');
+      $('.pageTitle').html('Pengeluaran');
+      $('title').html('Pengeluaran');
       break;
     //pengaturan
     case "atur-jumlah-siswa":
       $('a').removeClass('active');
       $('#treePengaturan').addClass('menu-open');
-      $('#pengaturanMenu').addClass('active');
+      $('#jmSiswanMenu').addClass('active');
+      $('#').addClass('active');
       $('.pageTitle').html('Atur Jumlah Siswa');
       $('title').html('Atur Jumlah Siswa');
       break;
     case "atur-pendapatan":
       $('a').removeClass('active');
       $('#treePengaturan').addClass('menu-open');
-      $('#pengaturanMenu').addClass('active');
+      $('#aturPendapatanSubMenu').addClass('active');
       $('.pageTitle').html('Atur Pendapatan');
       $('title').html('Atur Jumlah Siswa');
       break;
     case "atur-pengeluaran":
       $('a').removeClass('active');
       $('#treePengaturan').addClass('menu-open');
-      $('#pengaturanMenu').addClass('active');
+      $('#aturPengeluaranSubMenu').addClass('active');
       $('.pageTitle').html('Atur Pengeluaran');
       $('title').html('Atur Pengeluaran');
       break;
+    case "atur-jurnal-transaksi":
+      $('a').removeClass('active');
+      $('#treePengaturan').addClass('menu-open');
+      $('#aturJurnalTransaksiSubMenu').addClass('active');
+      $('.pageTitle').html('Atur Jurnal Transaksi');
+      $('title').html('Atur Jurnal Transaksi');
+      break;  
     default:
       $('a').removeClass('active');
       $('#dashboard').addClass('active');

@@ -27,8 +27,6 @@
         text: 'Maaf Sesi Anda habis, Silahkan Login Ulang!'
       }, 
       Cookies.remove('accessToken', {path:'/'}));
-  } else {
-    window.location.href = "admin/";
   }
   
   $(document).on('submit', '#loginForm', function(e){

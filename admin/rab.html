@@ -75,7 +75,7 @@
   </div>
 
   <div class="col-sm-9">
-  	<div class="col-md-12">
+  	<div class="col-sm-12">
       <div class="card card-primary collapsed-card">
         <div class="card-header">
           <h3 class="card-title">Filter Data</h3>
@@ -121,9 +121,9 @@
         <!-- /.card -->
       </div>
   	</div>
-  	<div class="col-md-12">
+  	<div class="col-sm-12">
 	  	<div class="table-responsive-lg">
-	      <table class="datatables table table-sm table-hover table-bordered table-striped">
+	      <table class="datatables table table-sm table-hover table-bordered table-striped" style="font-size: 11px;">
 	      	<legend>
 	      		<strong class="totalPendapatan" id="totalRAB"></strong><br>
 	      		<small>Jumlah = Nominal * Jumlah Siswa * Var 1 * Var 2 * Var 3</small>
@@ -156,9 +156,12 @@
 	$(document).ready(function(){
 		//buat instansi tanggal
 		var d = new Date();
+		var m = d.getMonth();
 	  var y = d.getFullYear();
-		$('#periode1').val(y);
-		$('#periode2').val(y+1);
+	  if (m > 6) {
+	  	$('#periode1').val(y);
+			$('#periode2').val(y+1);
+	  }
 		API_REQUEST('all/pembiayaan', 'GET', token, '', '').done(function(r){
 	    var forOption = '';
 	    var no = 1;
@@ -341,14 +344,24 @@
 	});
 	$(document).on('submit', '#FilterDataRAB', function(e){
 		e.preventDefault();
-		var Ftgl = $('#fromTgl').val().split("-");
-		var Ttgl = $('#toTgl').val().split("-");
+		var Ftgl = '';
+		var Ttgl = '';
+		if ($('#fromTgl').val() == "" || $('#toTgl').val() == "") {
+			Ftgl = "";
+			Ttgl = "";
+		} else {
+			var f = $('#fromTgl').val().split("-");
+			var t = $('#toTgl').val().split("-");
+			Ftgl = f[0]+"-"+f[2]+"-"+f[1]
+			Ttgl = t[0]+"-"+t[2]+"-"+t[1];
+		}
 		var data = {
 			TahunAjaran : $('#periodeOption option:selected').val(),
-			FromTgl : Ftgl[0]+"-"+Ftgl[2]+"-"+Ftgl[1],
-			ToTgl : Ttgl[0]+"-"+Ttgl[2]+"-"+Ttgl[1],
+			FromTgl : Ftgl,
+			ToTgl : Ttgl,
 			IDUser : $('#UserRoleOption option:selected').val()
 		};
+		//console.log(data);
 		API_REQUEST('filter/rab', 'POST', token, '', JSON.stringify(data)).done(function(r){
 			var html = '';
 			var no = 1;

@@ -82,6 +82,7 @@
 </div>
 
 <script>
+  $('.currency').maskMoney({precision:0});
   $('#modalEditRab').on('shown.bs.modal', function(e){
     let button = $(e.relatedTarget);
     let id = button.data('id');
@@ -101,6 +102,7 @@
         });
         $('#optionPengeluaran_e').html('<option value="1">Jenis Pengeluaran</option>' + forOption);
       });
+      //tampilkan yang di select user sebelum user memilih jenis pembiayaan
       API_REQUEST('one/ayat-jurnal/by/', 'GET', token, el.pembiayaan_id, '').done(function(r){
         var forOption = '';
         var no = 1;

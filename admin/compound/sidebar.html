@@ -21,25 +21,70 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+          <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
           <li class="nav-item">
             <a href="index" class="nav-link" id="dashboardMenu">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>Dashboard</p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="pendapatan" class="nav-link"  id="pendapatanMenu">
-              <i class="nav-icon fas fa-arrow-circle-down"></i>
-              <p>Pendapatan</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="rab" class="nav-link"  id="rabMenu">
+
+          <li class="nav-item has-treeview" id="treeRAPBM">
+            <a href="#" class="nav-link">
               <i class="nav-icon fas fa-clipboard"></i>
-              <p>RAB</p>
+              <p>
+                RAPBM
+                <i class="fas fa-angle-left right"></i>
+              </p>
             </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="pendapatan" class="nav-link"  id="pendapatanMenu">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Pendapatan</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="rab" class="nav-link"  id="rabMenu">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>RAB</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item has-treeview" id="treeLaporanKeuangan">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-list"></i>
+              <p>
+                Laporan Keuangan
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item has-treeview" id="treeJurnalTransaksiMenu">
+                <a href="#" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>
+                    Jurnal Transaksi
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="jurnal-pendapatan" class="nav-link" id="pendapatanMenu">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>Pendapatan</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="jurnal-pengeluaran" class="nav-link" id="pengeluaranMenu">
+                      <i class="far fa-dot-circle nav-icon"></i>
+                      <p>Pengeluaran</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </li>
           <li class="nav-item has-treeview" id="treeUser">
             <a href="#" class="nav-link" id="userMenu">
@@ -51,15 +96,15 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="user-role" class="nav-link">
+                <a href="user-role" class="nav-link" id="roleSubMenu">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>User Role</p>
+                  <p>Jenis Pengguna</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="user" class="nav-link">
+                <a href="user" class="nav-link" id="userSubMenu">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>User</p>
+                  <p>Pengguna</p>
                 </a>
               </li>
             </ul>
@@ -74,21 +119,27 @@
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="atur-jumlah-siswa" class="nav-link">
+                <a href="atur-jumlah-siswa" class="nav-link" id="jmSiswanMenu">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Jumlah Siswa</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="atur-pendapatan" class="nav-link">
+                <a href="atur-pendapatan" class="nav-link" id="aturPendapatanSubMenu">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Pendapatan</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="atur-pengeluaran" class="nav-link">
+                <a href="atur-pengeluaran" class="nav-link" id="aturPengeluaranSubMenu">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Pengeluaran</p>
+                  <p>RAB</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="atur-jurnal-transaksi" class="nav-link" id="aturJurnalTransaksiSubMenu">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Jurnal Transaksi</p>
                 </a>
               </li>
             </ul>

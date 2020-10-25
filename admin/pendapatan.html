@@ -89,29 +89,31 @@
 </div>
 
 <script>
-  //load modal edit pendapatan
-  $(document).ready(() => {
-    $('#appendModalHere').load('modals/modal-edit-pendapatan.html');
-  });
   //tampilkan data untuk dropdown
   $(document).ready(() => {
+    //load modal edit pendapatan
+    $('#appendModalHere').load('modals/modal-edit-pendapatan.html');
     //append select option jumlah siswa
     var Html = '';
     API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done((res) => {
       $.each(res, (index, el) => {
         Html += `<option value="${ el.id_jenis_pendapatan }">${ el.jenis_pendapatan }</option>`;
       });
-      $('#jenis_pendapatan_id').html("<option value='0'>Jenis Sumber</option>" + Html);
+      $('#jenis_pendapatan_id').html("<option>Jenis Sumber</option>" + Html);
     });
-    //append select option jumlah siswa
-    var spHtml = '';
-    API_REQUEST('all/sumber-pendapatan', 'GET', token, '', '').done((res) => {
-      $.each(res, (index, el) => {
-        spHtml += `<option value="${ el.id_sumber_pendapatan }">${ el.sumber_pendapatan }</option>`;
+    //aktifkan pilihan setelah user mengganti select option
+    $('#jenis_pendapatan_id').change(function(e){
+      var id = $('#jenis_pendapatan_id option:selected').val();
+      API_REQUEST('all/sumber-pendapatan/by/jenis/', 'GET', token, id, '').done(function(r){
+        var forOption = '';
+        var no = 1;
+        $.each(r, function(k, v) {
+          forOption += `<option value="${ v.id_sumber_pendapatan }">${ v.sumber_pendapatan }</option>`;
+        });
+        $('#sumber_pendapatan_id').html('<option>Pilih Sumber</option>' + forOption);
       });
-      $('#sumber_pendapatan_id').html("<option value='0'>Sumber</option>" + spHtml);
     });
-    //append select option jumlah siswa
+    /*append select option jumlah siswa*/
     var jsHtml = '';
     API_REQUEST('all/jumlah-siswa', 'GET', token, '', '').done((res) => {
       $.each(res, (index, el) => {
@@ -151,7 +153,6 @@
   //simpan pendapatan
   $(document).on('submit', '#submitFormPendapatan', function(event) {
     event.preventDefault();
-    /* Act on the event */
     var siswa = $('#jumlah_siswa_id option:selected').val();
     var dataSplit = siswa.split("-");
     var data = JSON.stringify({

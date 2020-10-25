@@ -1,0 +1,53 @@
+<div class="modal fade" id="modalEditJenisPengeluaran" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticModalLabel">Ubah Jenis Pengeluaran</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="updateJenisPengeluaran" method="POST" novalidate="novalidate">
+          <input id="id_jenis_pengeluaran_e" name="id_jenis_pengeluaran" type="hidden">
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Sumber Dana</label>
+            <select class="form-control" id="optionJenisPendapatan_e"></select>
+          </div>
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Jenis Pengeluaran</label>
+            <input id="jenisPengeluaran_e" name="jenis_pengeluaran" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+          </div>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-dark btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+	$('#modalEditJenisPengeluaran').on('shown.bs.modal', function (e) {
+    var button = $(e.relatedTarget);
+    var id = button.data('id');
+    API_REQUEST('one/jenis-pengeluaran/', 'GET', token, id, '').done((res)=>{
+      API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done((response)=>{
+        var optionJp = '';
+        $.each(response, (index, el) => {
+          if (res.jenis_pendapatan_id == el.id_jenis_pendapatan) {
+            optionJp += `<option value="${ el.id_jenis_pendapatan }" selected>${ el.jenis_pendapatan }</option>`;
+          } else {
+            optionJp += `<option value="${ el.id_jenis_pendapatan }">${ el.jenis_pendapatan }</option>`;
+          }
+        });
+        $('#optionJenisPendapatan_e').html('<option value="0">Pilih Sumber</option>'+optionJp);
+      });
+      $('#id_jenis_pengeluaran_e').val(id);
+      $('#jenisPengeluaran_e').val(res.jenis_pengeluaran);
+    });
+  });

@@ -89,7 +89,8 @@ var API_REQUEST = function (Url, Method, token, UrlParam, Data) {
           icon: 'error',
           title: 'Error Status : ' + err.status,
           text: 'Bad Request!'
-        });
+        },Cookies.remove('accessToken', {path:'/'}),
+        window.location.href = "/simamin/login");
       break;
       case 401 :
         Swal.fire({
@@ -117,3 +118,12 @@ var API_REQUEST = function (Url, Method, token, UrlParam, Data) {
     }
 	});
 };
+
+var satuan = new Array(
+  "kg","gr","mg", 
+  "liter",
+  "Org","Ekor","Buah",
+  "Km","m","Cm","Inc",
+  "TB","GB","MB","Byte","Bit",
+  "Hari","Bulan","Jam"
+);
