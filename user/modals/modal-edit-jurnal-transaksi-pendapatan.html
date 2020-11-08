@@ -1,0 +1,85 @@
+<div class="modal fade" id="modalEditJurnalTransaksiPendapatan" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel"
+  aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-dark">
+        <h5 class="modal-title" id="staticModalLabel">Ubah Jurnal Transaksi</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="editJurnalTransaksiPendapatan" method="POST" novalidate="novalidate">\
+          <input type="hidden" id="id_jurnal_transaksi_pendapatan_e" name="">
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Jenis</label>
+            <select class="form-control" id="optionJenisPendapatan_e"></select>
+          </div>
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Sumber</label>
+            <select class="form-control" id="optionSumber_e"></select>
+          </div>
+          <div class="form-group">
+            <label class="control-label mb-1">Nominal</label>
+            <input id="nominal_e" name="" type="text" class="currency form-control" aria-required="true" aria-invalid="false">
+          </div>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-dark btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$('.currency').maskMoney({precision:0});
+$('#modalEditJurnalTransaksiPendapatan').on('shown.bs.modal', function(e){
+  var button = $(e.relatedTarget);
+  var id = button.data('id');
+
+  API_REQUEST("jurnal-transaksi-pendapatan/by/id/", "GET", token, id, "").done(function(response){
+    //console.log(response);
+    
+    $('#id_jurnal_transaksi_pendapatan_e').val(id);
+    $('#nominal_e').val(response.nominal);
+
+    API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done((res)=>{
+      //console.log(response);
+      var optionJp = '';
+      $.each(res, (index, el) => {
+        if(el.id_jenis_pendapatan == response.jenis_pendapatan_id) {
+          optionJp += `<option value="${ el.id_jenis_pendapatan }" selected>${ el.jenis_pendapatan }</option>`;
+        } else {
+          optionJp += `<option value="${ el.id_jenis_pendapatan }">${ el.jenis_pendapatan }</option>`;
+        }
+      });
+      $('#optionJenisPendapatan_e').html('<option value="0">Pilih Jenis</option>'+optionJp);
+    });
+    //tampilkan semua sebelum di pilih pada dropdown
+    API_REQUEST("all/jurnal-transaksi-jenis-pendapatan", "GET", token, "","").done(function(res){
+      var optionSumber = '';
+      $.each(res, function(i, el){
+        if (el.id_jurnal_transaksi_jenis_pendapatan == response.jurnal_transaksi_jenis_pendapatan_id) {
+          optionSumber += `<option value="${ el.id_jurnal_transaksi_jenis_pendapatan }" selected>${ el.sumber }</option>`;
+        } else {
+          optionSumber += `<option value="${ el.id_jurnal_transaksi_jenis_pendapatan }">${ el.sumber }</option>`;
+        }
+      });
+      $('#optionSumber_e').html(`<option value="0">Pilih Sumber</option>`+optionSumber);
+    });
+    //tampilkan aturan sumber
+    $('#optionJenisPendapatan_e').change(function(){
+      var id = $('#optionJenisPendapatan_e option:selected').val();
+      API_REQUEST("jurnal-transaksi-jenis-pendapatan/by/jenis-pendapatan/id/", "GET", token, id,"").done(function(res){
+        var optionSumber = '';
+        $.each(res, function(i, el){
+          optionSumber += `<option value="${ el.id_jurnal_transaksi_jenis_pendapatan }">${ el.sumber }</option>`;
+        });
+        $('#optionSumber_e').html(optionSumber);
+      });
+    });
+  });
+});
+</script>

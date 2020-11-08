@@ -1,0 +1,44 @@
+<!--#include file="all-head.html"-->
+<div class="row">
+	<div class="col-12">
+	<table id="dataPosisiKeuangan" class="table table-sm table-hover table-bordered table-striped" style="width: 100%;"></table>
+	</div>
+</div>
+<script>
+	$(document).ready(function() {
+		dataPosisiKeuangan = $('#dataPosisiKeuangan').DataTable({
+			"processing":true,
+			columns : [
+				{title: "No"},
+				{title: "Jenis Pengguna"},
+				{title: "jumlah"}
+			]
+		});
+		PosisiKeuangan();
+	});
+	function PosisiKeuangan() {
+		dataPosisiKeuangan.clear();
+		API_REQUEST("all/role", "GET", token, "", "").done(function(res){
+			var no = 1;
+			$.each(res, function(index, el) {
+				var dataNominal = new Array();
+				function getData(){
+					var nominal = 0;
+					API_REQUEST("posisi-keuangan/jtp/", "GET", token, el.id_role, "").done(function(r){
+						$.each(r, function(i,e) {
+							//console.log(e.nominal)
+							e.nominal;
+						});
+					});
+				}
+				//console.log(getData(el.id_role));
+				dataPosisiKeuangan.row.add([
+					no++,
+					el.role,
+					getData()
+				]).draw();
+			});
+		});
+	}
+</script>
+<!--#include file="all-foot.html"-->

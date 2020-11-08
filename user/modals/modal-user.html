@@ -1,0 +1,218 @@
+<!-- STATIC MODAL -->
+<div class="modal fade" id="staticModal" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel"
+  aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticModalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- form add user -->
+<div class="modal fade" id="ModalUserAdd" tabindex="-1" role="dialog" aria-labelledby="scrollmodalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="scrollmodalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body lg-modal">
+        <h3 class="text-center title-2"><b>Tambah Pengguna</b></h3><hr>
+        <form id="submitUser" method="post" novalidate="novalidate">
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label for="name" class="control-label mb-1">Nama Lengkap</label>
+                <input id="name" name="name" type="text" class="form-control" aria-required="true" aria-invalid="false" value="">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label for="birthdate" class="control-label mb-1">Tgl. Lahir</label>
+                <input id="birthdate" name="birthdate" type="date" class="form-control" aria-required="true" aria-invalid="false" value="">
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label for="gen" class="control-label mb-1">Jenis Kelamin</label>
+                <select class="form-control" name="gen" id="Gender">
+                  <option value="L">Laki-Laki</option>
+                  <option value="P">Perempuan</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="address" class="control-label mb-1">Alamat</label>
+            <textarea id="address" name="address" class="form-control" aria-required="true" aria-invalid="false" rows="2"></textarea>
+          </div>
+          <div class="row">
+            <div class="col-4"><div class="form-group">
+              <label for="role" class="control-label mb-1" id="#roleOption">Jenis Pengguna</label>
+              <select class="form-control" id="SelectUserRole" name="role_id">
+                <option>Jenis Pengguna</option>
+              </select>
+            </div></div>
+            <div class="col-4"><div class="form-group">
+              <label for="phone" class="control-label mb-1">No.HP</label>
+              <input id="phone" name="phone" type="number" maxlength="13" class="form-control" aria-required="true" aria-invalid="false" value="08">
+            </div></div>
+            <div class="col-4"><div class="form-group">
+              <label for="email" class="control-label mb-1">Email</label>
+              <input id="email" name="email" type="email" class="form-control" aria-required="true" aria-invalid="false" value="">
+            </div></div>
+          </div>
+          <div class="row">
+            <div class="col-6"><div class="form-group">
+              <label for="username" class="control-label mb-1">Username</label>
+              <input id="username" name="username" type="text" class="form-control" aria-required="true" aria-invalid="false" value="" maxlength="30">
+            </div></div>
+            <div class="col-6"><div class="form-group">
+              <label for="password" class="control-label mb-1">Password</label>
+              <input id="password" name="password" type="password" class="form-control" aria-required="true" aria-invalid="false" value="">
+            </div></div>
+          </div>
+          <div>
+            <button type="submit" class="btn btn-lg btn-info btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp;
+              <span>SIMPAN</span>
+              <span style="display:none;">Sending…</span>
+            </button>
+          </div>
+        </form>
+        <script type="text/javascript">
+        $('#SelectUserRole').focus(function () {
+          API_REQUEST('all/role','GET', token, '', '').done(function(response){
+            let html = '';
+              response.forEach(el => {
+                data_role.set(parseInt(el.id_role));
+                html+=`<option value="${ el.id_role }">${ el.role }</option>`;
+              });
+            $('#SelectUserRole').html(html);
+          });
+        });
+        </script>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end modal scroll -->
+
+<!-- form edit user -->
+<div class="modal fade" id="ModalUserEdit" tabindex="-1" role="dialog" aria-labelledby="scrollmodalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="scrollmodalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body lg-modal" id="FormEditModal"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$('#ModalUserEdit').on('show.bs.modal', function (event) {
+  let button = $(event.relatedTarget);
+  let id_user = button.data('user');
+
+  API_REQUEST('one/user/','GET', token, id_user, '').done(function(response){
+    let Gen = response.gen;
+    let roleId = response.id_role;
+    let Opt = '';
+    if (Gen == 'L') {
+      Opt += `<option value="L" selected>Laki-Laki</option><option value="P">Perempuan</option>`;
+    } else {
+      Opt += `<option value="L">Laki-Laki</option><option value="P" selected>Perempuan</option>`;
+    }
+    API_REQUEST('all/role','GET', token, '', '').done(function(response){
+      let html = '';
+      response.forEach(el => {
+        let selected = '';
+        if (el.id_role == roleId) {
+          selected += `selected`;
+        } else {
+          selected += ``;
+        }
+        html += `<option value="${el.id_role}" ${ selected }>${el.role}</option>`;
+      });
+      $('#SelectRole').html(html);
+    });
+    $('#FormEditModal').html(`<h3 class="text-center title-2"><b>Ubah Pengguna</b></h3><hr>
+    <form id="submitEditUser" novalidate="novalidate">
+      <input id="id_usere" name="id_user" type="hidden" value="${ id_user }">
+      <input id="usernamee" name="username" type="hidden" value="${ response.username }">
+      <div class="row">
+        <div class="col-12">
+          <div class="form-group">
+            <label for="namee" class="control-label mb-1">Nama Depan</label>
+            <input id="namee" name="name" type="text" class="form-control" aria-required="true" aria-invalid="false" value="${ response.name }">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group">
+            <label for="birthdate" class="control-label mb-1">Tgl. Lahir</label>
+            <input id="birthdatee" name="birthdate" type="text" class="form-control" aria-required="true" aria-invalid="false" value="${ response.birth_date }">
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group">
+            <label for="gen" class="control-label mb-1">Jenis Kelamin</label>
+            <select class="form-control" name="gen" id="gendere">
+              ${ Opt }
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="address" class="control-label mb-1">Alamat</label>
+        <textarea id="addresse" name="address" class="form-control" aria-required="true" aria-invalid="false" rows="2">${ response.address }</textarea>
+      </div>
+      <div class="row">
+        <div class="col-4"><div class="form-group">
+            <label for="role" class="control-label mb-1">Jenis Pengguna</label>
+            <select class="form-control" id="SelectRole" name="role_ide"></select>
+          </div></div>
+        <div class="col-4"><div class="form-group">
+          <label for="phonee" class="control-label mb-1">No.HP</label>
+          <input id="phonee" name="phone" type="number" maxlength="13" class="form-control" aria-required="true" aria-invalid="false" value="${ response.phone }">
+        </div></div>
+        <div class="col-4"><div class="form-group">
+          <label for="emaile" class="control-label mb-1">Email</label>
+          <input id="emaile" name="email" type="email" class="form-control" aria-required="true" aria-invalid="false" value="${ response.email }">
+        </div></div>
+      </div>
+      <div>
+        <button type="submit" class="btn btn-lg btn-info btn-block">
+          <i class="fa fa-save fa-lg"></i>&nbsp;
+          <span>SIMPAN</span>
+          <span style="display:none;">Sending…</span>
+        </button>
+      </div>
+    </form>`);
+  });
+});
+</script>
+<!-- end modal scroll -->

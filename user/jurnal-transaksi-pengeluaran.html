@@ -1,0 +1,284 @@
+<!--#include file="all-head.html"-->
+
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card card-primary collapsed-card">
+        <div class="card-header">
+          <h3 class="card-title">Filter Data</h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <!-- /.card-tools -->
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <form method="POST" id="filterDataJurnalTransaksi">
+          	<div class="form-group">
+		  				<label>Berdasarkan Tahun Ajaran</label>
+		  				<select class="select2 form-control" id="TAOption"></select>
+		  			</div>
+		  			<div class="form-group">
+		  				<label>Berdasarkan User dan Role</label>
+		  				<select class="select2 form-control" id="UserRoleOption" style="text-transform: uppercase;"></select>
+		  			</div>
+		  			<div class="form-group">
+		  				<label>Berdasarkan Sumber Pendapatan</label>
+		  				<select class="select2 form-control" id="optionJenisPendapatanF" style="text-transform: uppercase;"></select>
+		  			</div>
+          	<div class="row">
+          		<div class="col">
+	          		<div class="form-group">
+				  				<label>Dari Tanggal</label>
+					  			<input id="fromTgl" type="text" value="" name=""
+					  				class="datemask form-control" data-inputmask-alias="datetime" 
+						        data-inputmask-inputformat="yyyy-dd-mm" data-mask="" im-insert="false">
+				  			</div>
+			  			</div>
+			  			<div class="col">
+			  				<div class="form-group">
+				  				<label>Sampai Tanggal</label>
+					  			<input id="toTgl" type="text" value="" name=""
+						  			class="datemask form-control" data-inputmask-alias="datetime" 
+						        data-inputmask-inputformat="yyyy-dd-mm" data-mask="" im-insert="false">
+				  			</div>
+			  			</div>
+          	</div>
+		  			<button type="submit" class="btn btn-block btn-success"><i class="fa fa-search"></i> TERAPKAN</button>
+		  		</form>
+        </div>
+        <!-- /.card-body -->
+        <!-- /.card -->
+      </div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-sm-12">
+		<div class="table-responsive-lg">
+      <table id="dataJurnalTransaksi" class="table table-sm table-hover table-bordered table-striped" style="font-size: 11px; width: 100%;">
+      	<legend>
+      		<div class="">
+      		</div>
+      		<div class="row">
+      			<div class="col text-right">
+      				<button class="btn btn-sm btn-info" data-toggle="modal" data-target="#modalAddJurnalTransaksi"><i class="fa fa-plus"></i> Tambah Data</button>
+      			</div>
+      		</div>
+      	</legend>
+      </table>
+    </div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-12" id="SOjurnalTransaksi"></div>
+</div>
+
+<script>
+	$(document).ready(function(){
+		$('#appendModalHere').load('modals/modal-add-jurnal-transaksi-pengeluaran.html');
+		$('#appendModalHereSlot').load('modals/modal-edit-jurnal-transaksi-pengeluaran.html');
+		//For Option Data
+    API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done(function(response){
+      var optionJp = '';
+      //console.log(response);
+      $.each(response, (index, el) => {
+        optionJp += `<option value="${ el.id_jenis_pendapatan }">${ el.jenis_pendapatan }</option>`;
+      });
+      $('#optionJenisPendapatanF').html('<option value="0">Pilih Sumber</option>'+optionJp);
+    });
+    var userOption = '';
+    API_REQUEST("all/user", 'GET', token, '', '').done(function(r) {
+    	$.each(r, function(index, el) {
+    		userOption += `<option value="${ el.id_user }">${ el.name.toUpperCase() } - ${ el.Role.role.toUpperCase() }</option>`
+    	});
+    	$('#UserRoleOption').html('<option value="0">Pilih User Role</option>'+userOption);
+    });
+
+		jurnalTransaksi = $('#dataJurnalTransaksi').DataTable({
+			"processing":true,
+	    "dom":"<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>><'row't><'row'<'col-sm-6'i><'col-sm-6'p>>",
+	    language:{
+	    	buttons:{colvis:'Sembunyikan',print:'Cetak'}
+	    },
+			buttons:[
+				{ extend:'colvis', text:window.colvisButtonTrans, exportOptions:{columns:':visible'}},
+				{ extend:'print', text:window.printButtonTrans, exportOptions:{columns:':visible'}},
+				{ extend:'csv', text:window.csvButtonTrans, exportOptions:{
+						columns:':visible',
+						format:{
+		    			body:function(data,row,column,node){
+		    				return column === 9 ?
+		    					data.replace(/[.,]/g,''):
+		    					data;
+		    			}
+		    		}
+					}
+				}
+			],
+			columns : [
+				{title:"No"},
+				{title:"Tgl"},
+				{title:"Pengguna"},
+				{title:"Jabatan"},
+				{title:"T.A"},
+				{title:"No.Kwitansi"},
+				{title:"Sumber"},
+				{title:"Pengeluaran"},
+				{title:"Ayat Jurnal"},
+				{title:"Nominal"},
+				{title:"Tindakan"}
+			]
+		});
+		AllJurnalTransaksi();
+	});
+	function AllJurnalTransaksi(){
+		var TAOption = '';
+		API_REQUEST('tahun-ajaran/jurnal-transaksi-pengeluaran', 'GET', token, '', '').done(function (r) {
+			$.each(r, function (index, el) {
+				TAOption += `<option value="${el.tahun_ajaran}">${el.tahun_ajaran}</option>`
+			});
+			$('#TAOption').html('<option value="0">Pilih Tahun Ajaran</option>' + TAOption);
+		});
+		//Datatable
+		jurnalTransaksi.clear();
+		API_REQUEST('all/jurnal-transaksi-pengeluaran', 'GET', token, '','').done(function(res){
+			var no = 1;
+			var total = 0;
+			//console.log(res);
+			$.each(res, function() {
+				var jumlah = 0;
+				var splitTgl = this.create_at.split("T");
+				jumlah += this.nominal;
+				jurnalTransaksi.row.add([
+					no++,
+					splitTgl[0],
+					this.User.name,
+					this.Role.role,
+					this.tahun_ajaran,
+					this.no_kwitansi,
+					this.JenisPendapatan.jenis_pendapatan,
+					this.JenisPengeluaran.jenis_pengeluaran,
+					this.AyatJurnalTransaksi.ayat_jurnal_transaksi,
+					formatNum(this.nominal),
+					`<button type="button" class="btn btn-sm btn-warning text-white" data-id="${ this.id_jurnal_transaksi_pengeluaran }" data-toggle="modal" data-target="#modalEditJurnalTransaksiPengeluaran"><i class="fa fa-edit"></i></button>
+					<button type="button" class="btn btn-sm btn-danger" id="deleteJurnalTransaksiPengeluaran" data-id="${this.id_jurnal_transaksi_pengeluaran}"><i class="fa fa-trash"></i></button>`
+				]).draw();
+				total += jumlah
+			});
+			/*$('#totalJurnalTransaksi').html(`<div class="card bg-success"><div class="card-body"> TOTAL : <div class="float-right">Rp <b>` + formatNum(total)+`</b></div></div></div>`);
+			API_REQUEST('total/pendapatan', 'GET', token, '', '').done(function(e){
+				var TOTAL = e.Result - total;
+				if (TOTAL < total) {
+					$('#SOjurnalTransaksi').html(`<h2 class="text-right"><strong class="text-green">SO: Rp ${formatNum(e.Result)}</strong> - <strong class="text-warning">Rp ${formatNum(total)}</strong> = <strong>${formatNum(TOTAL)}</strong></h2>`);
+				} else {
+					$('#SOjurnalTransaksi').html(`<h2 class="text-right"><strong class="text-green">SO: Rp ${formatNum(e.Result)}</strong> - <strong class="text-warning">Rp ${formatNum(total)}</strong> = <strong>${formatNum(TOTAL)}</strong></h2>`);
+				}
+			});*/
+		});
+	}
+	$(document).on('submit', '#submitJurnalTransaksiPengeluaran', function(e){
+		e.preventDefault();
+		var data = JSON.stringify({
+			id_jurnal_transaksi_pengeluaran : "",
+			user_id : parseInt(GenerateToken().IDUser),
+			role_id : GenerateToken().RoleID,
+			tahun_ajaran : $('#periode1').val() +"/"+ $('#periode2').val(),
+			no_kwitansi : $('#no_kwitansi').val(),
+			jenis_pendapatan_id : $('#optionJenisPendapatan option:selected').val(),
+			jenis_pengeluaran_id : parseInt($('#optionJenisPengeluaran option:selected').val()),
+			ayat_jurnal_transaksi_id : parseInt($('#optionAyatJurnalTransaksi option:selected').val()),
+			nominal : removeCommaSeparator('#nominal'),
+      status : 0
+		});
+		//console.log(data);
+		API_REQUEST('add/jurnal-transaksi-pengeluaran', 'POST', token, '', data).done(function(){
+			Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Created'
+      }, AllJurnalTransaksi());
+		});
+	});
+	//delete jurnal transaksi
+	$(document).on('click', '#deleteJurnalTransaksiPengeluaran', function(e){
+		e.preventDefault();
+    var id = $(this).data('id');
+    Swal.fire({
+      title:'Apakah anda yakin menghapus data ini?',
+      text:'',
+      icon:'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+      closeOnConfirm: false
+    }).then((result) => {
+      if (result.value == true) {
+        API_REQUEST('delete/jurnal-transaksi-pengeluaran/', 'DELETE', token, id, '').done(function(event) {
+          Swal.fire({
+            icon:'success',
+            title:'Ok',
+            text:'Deleted'
+          }, AllJurnalTransaksi());
+        });
+      } else { 
+        result.dismiss;
+      }
+    });
+	});
+	//update jurnal transaksi
+	$(document).on('submit', '#submitEditJurnalTransaksiPengeluaran', function(e){
+		e.preventDefault();
+		var data = JSON.stringify({
+			id_jurnal_transaksi_pengeluaran : parseInt($('#id_jurnal_transaksi_pengeluaran_e').val()),
+			user_id : parseInt(GenerateToken().IDUser),
+			role_id : GenerateToken().RoleID,
+			tahun_ajaran : $('#periode1_e').val() +"/"+ $('#periode2_e').val(),
+			no_kwitansi : $('#no_kwitansi_e').val(),
+			jenis_pendapatan_id : $('#optionJenisPendapatan_e option:selected').val(),
+			jenis_pengeluaran_id : parseInt($('#optionJenisPengeluaran_e option:selected').val()),
+			ayat_jurnal_transaksi_id : parseInt($('#optionAyatJurnalTransaksi_e option:selected').val()),
+			nominal : removeCommaSeparator('#nominal_e')
+		});
+		//console.log(data);
+		API_REQUEST('update/jurnal-transaksi-pengeluaran', 'PUT', token, '', data).done(function(){
+			Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Created'
+      }, AllJurnalTransaksi());
+		});
+	});
+	//FILTER DATA
+	$(document).on('submit', '#filterDataJurnalTransaksi', function(e){
+		e.preventDefault();
+		var Ftgl = '';
+		var Ttgl = '';
+		if ($('#fromTgl').val() == "" || $('#toTgl').val() == "") {
+			Ftgl = "0";
+			Ttgl = "0";
+		} else {
+			var f = $('#fromTgl').val().split("-");
+			var t = $('#toTgl').val().split("-");
+			Ftgl = f[0]+"-"+f[2]+"-"+f[1]
+			Ttgl = t[0]+"-"+t[2]+"-"+t[1];
+		}
+		var data = JSON.stringify({
+			TahunAjaran : $('#TAOption option:selected').val(),
+			IDUser : $('#UserRoleOption option:selected').val(),
+			JenisPendapatan : $('#optionJenisPendapatanF option:selected').val(),
+			FromTgl : Ftgl,
+			ToTgl : Ttgl
+		});
+		//console.log(data);
+		API_REQUEST('filter/jurnal-transaksi-pengeluaran', 'POST', token, '', data).done(function(r){
+			var html = '';
+			var no = 1;
+			var total = 0;
+			console.log(r);
+		});
+	});
+</script>
+
+<!--#include file="all-foot.html"-->

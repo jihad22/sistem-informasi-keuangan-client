@@ -1,78 +1,79 @@
-<div class="modal fade" id="modalEditRab" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel"
+<div class="modal fade" id="modalEditRAPBMRab" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel"
   aria-hidden="true" data-backdrop="static">
-  <div class="modal-dialog modal-sm" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticModalLabel">Ubah RAB</h5>
+        <h5 class="modal-title" id="staticModalLabel">Ubah RABPBM RAB</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form id="submitEditRAB" method="POST" novalidate="novalidate">
-          <input type="hidden" name="" id="id_rab_e">
-          <label for="" class="control-label mb-1">T.A</label>
+        <form id="editRapbmRab" method="POST" novalidate="novalidate">
           <div class="row">
-            <div class="col">
+            <div class="col-sm-6">
               <div class="form-group">
-                <input id="periode1_e" type="text" 
-                  class="form-control yearMask" 
-                  data-inputmask-alias="datetime" 
-                  data-inputmask-inputformat="yyyy" data-mask="" im-insert="false">
+                <label for="" class="control-label mb-1">Jenis Pendapatan</label>
+                <select class="select2 form-control" id="optionJenisPendapatan_e"></select>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="" class="control-label mb-1">Ayat Jurnal</label>
+                    <select class="select2 form-control" id="optionAyatJurnal_e">
+                      <option>Pilih Jenis Pendapatan Dulu</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="" class="control-label mb-1">Sub Ayat Jurnal</label>
+                    <select class="select2 form-control" id="optionSubAyatJurnal_e">
+                      <option>Pilih Sub Ayat Jurnal</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label mb-1">Nominal</label>
+                <input id="nominal_e" name="" type="text" class="currency form-control" aria-required="true" aria-invalid="false" value="0">
               </div>
             </div>
-            <div class="col">
+            <div class="col-sm-6">
+              <!-- <div class="form-group"></div> -->
               <div class="form-group">
-                <input id="periode2_e" type="text" 
-                  class="form-control yearMask" 
-                  data-inputmask-alias="datetime" 
-                  data-inputmask-inputformat="yyyy" data-mask="" im-insert="false">
+                <label for="" class="control-label mb-1">Jumlah Siswa</label>
+                <select class="form-control select2" id="optionJumlahSiswa_e"></select>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label class="control-label mb-1">Item 1</label>
+                    <input id="jumlah1_e" name="" type="number" class="form-control" aria-required="true" aria-invalid="false"
+                      value="0">
+                  </div>
+                </div>
+                <div class="col-6">
+                  <label class="control-label mb-1">Satuan</label>
+                  <select id="satuan1_e" class="select2 form-control Satuan"></select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label class="control-label mb-1">Item 2</label>
+                    <input id="jumlah2_e" name="var1" type="number" class="form-control" aria-required="true" aria-invalid="false"
+                      value="0">
+                  </div>
+                </div>
+                <div class="col-6">
+                  <label class="control-label mb-1">Satuan</label>
+                  <select id="satuan2_e" class="select2 form-control Satuan"></select>
+                </div>
               </div>
             </div>
           </div>
-          <label for="" class="control-label mb-1">Jenis Pengeluaran</label>
-          <div class="form-group">
-            <select class="form-control" id="optionPengeluaran_e"></select>
-          </div>
-          <label for="" class="control-label mb-1 ayatJurnal">Ayat Jurnal</label>
-          <div class="form-group">
-            <select class="form-control" id="optionAyatJurnal_e"></select>
-          </div>
-          <label class="control-label mb-1">Keterangan</label>
-          <div class="form-group">
-            <input id="keterangan_e" type="text" name="" class="form-control">
-          </div>
-          <div class="form-group">
-            <label class="control-label mb-1">Nominal</label>
-            <input id="nominal_e" name="var1" type="text" class="currency form-control" aria-required="true" aria-invalid="false" value="">
-          </div>
-          <label class="control-label mb-1">Jumlah Siswa</label>
-          <div class="form-group">
-            <select id="jumlah_siswa_id_e" class="form-control" name="jumlah_siswa"></select>
-          </div>
-          <div class="row">
-            <small class="text-red text-center">Biarkan nilai tetap 1 jika tidak menggunakan rumus</small>
-            <div class="col-4">
-              <label class="control-label mb-1">Var 1</label>
-              <div class="form-group">
-                <input id="var1_e" name="var1" type="number" class="form-control" aria-required="true" aria-invalid="false" value="1">
-              </div>
-            </div>
-            <div class="col-4">
-              <label class="control-label mb-1">Var 2</label>
-              <div class="form-group">
-                <input id="var2_e" name="var2" type="number" class="form-control" aria-required="true" aria-invalid="false" value="1">
-              </div>
-            </div>
-            <div class="col-4">
-              <label class="control-label mb-1">Var 3</label>
-              <div class="form-group">
-                <input id="var3_e" name="var3" type="number" class="form-control" aria-required="true" aria-invalid="false" value="1">
-              </div>
-            </div>
-            <small class="text-red text-center">Rumus: Nominal*Jumlah Siswa*var1*var2*var3</small>
-          </div>
-          <button id="payment-button" type="submit" class="btn btn-lg btn-dark btn-block">
+          <button id="payment-button" type="submit" class="btn btn-md btn-dark btn-block">
             <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
           </button>
         </form>
@@ -83,78 +84,112 @@
 
 <script>
   $('.currency').maskMoney({precision:0});
-  $('#modalEditRab').on('shown.bs.modal', function(e){
-    let button = $(e.relatedTarget);
-    let id = button.data('id');
-
-    API_REQUEST('one/rab/', 'GET', token, id, '').done(function(el){
-      //semua pembiayaan
-      API_REQUEST('all/pembiayaan', 'GET', token, '', '').done(function(r){
-        var forOption = '';
-        var no = 1;
-        //console.log(r);
-        $.each(r, function(k, v) {
-          if (v.id_pembiayaan == el.pembiayaan_id) {
-            forOption += `<option value="${ v.id_pembiayaan }" selected>${ v.pembiayaan }</option>`;
+  $('#modalEditRAPBMRab').on('shown.bs.modal', function(e){
+    var button = $(e.relatedTarget);
+    var id = button.data('id');
+    //console.log(id+"-"+idMasterRapbmRab);
+    API_REQUEST('/rapbm-rab/by/id/', 'GET', token, id, '').done(function(res){
+      //console.log(res);
+      var sat1 = '';
+      $.each(satuan, function(i, e){
+        if (res.satuan1 == e) {
+          sat1 += `<option value="${e}" selected>${e}</option>`;
+        } else {
+          sat1 += `<option value="${e}">${e}</option>`;
+        }
+      });
+      $('#satuan1_e').html(`<option value="-">Pilih Satuan</option>`+sat1);
+      var sat2 = '';
+      $.each(satuan, function(i, e){
+        if (res.satuan2 == e) {
+          sat2 += `<option value="${e}" selected>${e}</option>`;
+        } else {
+          sat2 += `<option value="${e}">${e}</option>`;
+        }
+      });
+      $('#satuan2_e').html(`<option value="-">Pilih Satuan</option>`+sat2);
+      
+      //append jenis pendapatan ke form
+      API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done(function(r) {
+        var optionJp = '';
+        $.each(r, function(i, el) {
+          if(el.id_jenis_pendapatan == res.jenis_pendapatan_id) {
+            optionJp += `<option value="${ el.id_jenis_pendapatan }" selected>${ el.jenis_pendapatan }</option>`;
           } else {
-            forOption += `<option value="${ v.id_pembiayaan }">${ v.pembiayaan }</option>`;
+            optionJp += `<option value="${ el.id_jenis_pendapatan }">${ el.jenis_pendapatan }</option>`;
           }
         });
-        $('#optionPengeluaran_e').html('<option value="1">Jenis Pengeluaran</option>' + forOption);
+        $('#optionJenisPendapatan_e').html(`<option value="0">Pilih Jenis Pendapatan</option>`+optionJp);
       });
-      //tampilkan yang di select user sebelum user memilih jenis pembiayaan
-      API_REQUEST('one/ayat-jurnal/by/', 'GET', token, el.pembiayaan_id, '').done(function(r){
-        var forOption = '';
-        var no = 1;
-        //console.log(r);
-        $.each(r, function(k, v) {
-          if (v.id_ayat_jurnal == el.ayat_jurnal_id) {
-            forOption += `<option value="${ v.id_ayat_jurnal }" selected>${ v.ayat_jurnal }</option>`;
-          } else {
-            forOption += `<option value="${ v.id_ayat_jurnal }">${ v.ayat_jurnal }</option>`;
-          }
-        });
-        $('#optionAyatJurnal_e').html('<option value="1">Ayat Jurnal</option>' + forOption);
-      });
-      //jalankan setelah select pembiayaan untuk menampilkan ayat jurnal sesuai id pembiayaan  
-      $('#optionPengeluaran_e').change(function(){
-        var idp = $('#optionPengeluaran_e option:selected').val();
-        API_REQUEST('one/ayat-jurnal/by/', 'GET', token, idp, '').done(function(r){
-          var forOption = '';
-          var no = 1;
-          //console.log(r);
-          $.each(r, function(k, v) {
-            if (v.id_ayat_jurnal == el.ayat_jurnal_id) {
-              forOption += `<option value="${ v.id_ayat_jurnal }" selected>${ v.ayat_jurnal }</option>`;
+      
+      //option jumlah siswa
+      API_REQUEST('/master-rapbm-rab/by/id/', 'GET', token, idMasterRapbmRab, '').done(function(rs){
+        API_REQUEST('jumlah-siswa/by/tahun-ajaran/id/', 'GET', token, rs.tahun_ajaran_id, '').done(function (r) {
+          let optionJmS = '';
+          $.each(r, function(i, e) {
+            if (res.jumlah_siswa_id == e.id_jm_siswa) {
+              optionJmS += `<option value="${ e.id_jm_siswa }-${ e.jumlah_siswa }" selected>${ e.kelas } : ${ e.jumlah_siswa }</option>`;
             } else {
-              forOption += `<option value="${ v.id_ayat_jurnal }">${ v.ayat_jurnal }</option>`;
+              optionJmS += `<option value="${ e.id_jm_siswa }-${ e.jumlah_siswa }">${ e.kelas } : ${ e.jumlah_siswa }</option>`;
             }
           });
-          $('#optionAyatJurnal_e').html('<option value="1">Ayat Jurnal</option>' + forOption);
+          $('#optionJumlahSiswa_e').html(`<option value="0-0">Pilih Jumlah Siswa</option>` + optionJmS);
         });
       });
       
-      //append data siswa ke form
-      API_REQUEST('all/jumlah-siswa', 'GET', token, '', '').done((res) => {
-        var jsHtml = '';
-        $.each(res, (index, v) => {
-          if (v.id_jm_siswa == el.jumlah_siswa_id) {
-            jsHtml += `<option value="${ v.id_jm_siswa }-${ v.jumlah_siswa }" selected>TA. ${ v.tahun_ajaran }, Siswa : ${ v.jumlah_siswa } Org</option>`;
+      //ayat jurnal sebelum di select
+      API_REQUEST('all/ayat-jurnal-rapbm-rab/', 'GET', token, '', '').done(function(r){
+        var ayatJurnalOpt = "";
+        $.each(r, function(i, el) {
+          if (el.id_ayat_jurnal_rapbm_rab == res.ayat_jurnal_rapbm_rab_id) {
+            ayatJurnalOpt += `<option value="${ el.id_ayat_jurnal_rapbm_rab }" selected>${ el.ayat_jurnal_rapbm_rab }</option>`;
           } else {
-            jsHtml += `<option value="${ v.id_jm_siswa }-${ v.jumlah_siswa }">TA. ${ v.tahun_ajaran }, Siswa : ${ v.jumlah_siswa } Org</option>`;
+            ayatJurnalOpt += `<option value="${ el.id_ayat_jurnal_rapbm_rab }">${ el.ayat_jurnal_rapbm_rab }</option>`;
           }
         });
-        $('#jumlah_siswa_id_e').html("<option value='0-1'>1 - Jumlah Siswa</option>" + jsHtml);
+        $('#optionAyatJurnal_e').html(`<option value="0">Pilih Ayat Jurnal</option>`+ayatJurnalOpt);
       });
-      var data = el.tahun_ajaran.split("/");
-      $('#id_rab_e').val(id);
-      $('#periode1_e').val(data[0]);
-      $('#periode2_e').val(data[1]);
-      $('#keterangan_e').val(el.keterangan);
-      $('#nominal_e').val(el.biaya);
-      $('#var1_e').val(el.var1);
-      $('#var2_e').val(el.var2);
-      $('#var3_e').val(el.var3);
+
+      //all sub ayat jurnal sebelum ayat jurnal di seler
+      API_REQUEST('all/sub-ayat-jurnal-rapbm-rab/', 'GET', token, '', '').done(function(r){
+        var ayatJurnalOpt = "";
+        $.each(r, function(i, el) {
+          if (el.id_sub_ayat_jurnal_rapbm_rab == res.sub_ayat_jurnal_rapbm_rab_id) {
+            ayatJurnalOpt += `<option value="${ el.id_sub_ayat_jurnal_rapbm_rab }" selected>${ el.sub_ayat_jurnal_rapbm_rab }</option>`;
+          } else {
+            ayatJurnalOpt += `<option value="${ el.id_sub_ayat_jurnal_rapbm_rab }">${ el.sub_ayat_jurnal_rapbm_rab }</option>`;
+          }
+        });
+        $('#optionSubAyatJurnal_e').html(`<option value="0">Pilih Sub Ayat Jurnal</option>`+ayatJurnalOpt);
+      });
+
+      //setelah jenis pendapatan di select tampilkan ayat jurnal berdasakran jenis pendapatan
+      $('#optionJenisPendapatan_e').change(function() {
+        let idJP = $("#optionJenisPendapatan_e option:selected").val();
+        API_REQUEST('ayat-jurnal-rapbm-rab/by/jenis-pendapatan/id/', 'GET', token, idJP, '').done(function(response){
+          var ayatJurnalOpt = "";
+          $.each(response, (i, el) => {
+            ayatJurnalOpt += `<option value="${ el.id_ayat_jurnal_rapbm_rab }">${ el.ayat_jurnal_rapbm_rab }</option>`;
+          });
+          $('#optionAyatJurnal_e').html(`<option value="0">Pilih Ayat Jurnal</option>`+ayatJurnalOpt);
+        });
+      });
+      //setelah ayat jurnal dipilih tampilkan sub ayat jurnal sesuai id ayat jurnal
+      $('#optionAyatJurnal_e').change(function(){
+        var id = $('#optionAyatJurnal_e option:selected').val();
+        API_REQUEST('sub-ayat-jurnal-rapbm-rab/by/ayat-jurnal-rapbm-rab/id/', 'GET', token, id, '').done(function(response){
+          var SubAyatJurnalOpt = "";
+          $.each(response, (i, el) => {
+            SubAyatJurnalOpt += `<option value="${ el.id_sub_ayat_jurnal_rapbm_rab }">${ el.sub_ayat_jurnal_rapbm_rab }</option>`;
+          });
+          $('#optionSubAyatJurnal_e').html(`<option value="0">Pilih Sub Ayat Jurnal</option>`+SubAyatJurnalOpt);
+        });
+      });
+      
+      $('#nominal_e').val(res.nominal);
+      $('#id_rapbm_pendapatan_e').val(id);
+      $('#jumlah1_e').val(res.jm1);
+      $('#jumlah2_e').val(res.jm2);
     });
   });
 </script>

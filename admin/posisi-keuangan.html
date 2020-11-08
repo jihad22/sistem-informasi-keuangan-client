@@ -1,0 +1,155 @@
+<!--#include file="all-head.html"-->
+<div class="row">
+	<div class="col-12">
+		<form id="filterPosisiKeuangan">
+			<div class="row">
+				<div class="col-sm-5 form-group">
+					<label class="control-label">Dari Tanggal</label>
+					<input type="date" class="form-control" name="fromTgl" id="fromTgl">
+				</div>
+				<div class="col-sm-5 form-group">
+					<label class="control-label">Sampai Tanggal</label>
+					<input type="date" class="form-control" name="fromTgl" id="toTgl">
+				</div>
+				<div class="col-sm-2 form-group mt-4">
+					<button class="btn btn-block btn-info mt-2"><i class="fa fa-filter"></i> Filter</button>
+				</div>
+			</div>
+		</form>
+		<div class="table-responsive-lg">
+			<legend  class="text-right">
+				<strong>
+					<span class="text-right" id="totalPengeluaran"></span>
+				</strong>
+			</legend>
+			<table id="dataPosisiKeuangan" class="table table-sm table-hover table-bordered table-striped" style="width: 100%;"></table>
+		</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+	dataPosisiKeuangan = $('#dataPosisiKeuangan').DataTable({
+		"processing":true,
+    "dom":"<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>><'row't><'row'<'col-sm-6'i><'col-sm-6'p>>",
+    language:{
+      buttons:{colvis:'Sembunyikan',print:'Cetak'}
+    },
+    buttons:[
+      { extend:'colvis', text:window.colvisButtonTrans, exportOptions:{columns:':visible'} },
+      { extend:'print', text:window.printButtonTrans, exportOptions:{columns:':visible'} },
+      { extend:'csv', text:window.csvButtonTrans, exportOptions:{
+          columns:':visible',
+          format:{
+            body:function(data,row,column,node){
+              return column === 4 ?
+                data.replace(/[.,]/g,''):
+                data;
+            }
+          }
+        }
+      }
+    ],
+		columns : [
+			{title: "No"},
+			{title: "Tgl"},
+			{title: "Jenis Pengguna"},
+			{title: "Kode"},
+			{title: "Nama Pengguna"},
+			{title: "jumlah"}
+		]
+	});
+	PosisiKeuangan();
+});
+
+var nowDate = new Date();
+var dt = nowDate.toLocaleString();
+var removeDateComma = dt.split(",")
+var removeSlash = removeDateComma[0].split("/")
+
+var y = removeSlash[2];
+var m = removeSlash[0];
+
+function PosisiKeuangan() {
+	var date = JSON.stringify({
+		fromTgl:y + "-" + m + "-" + "01",
+		ToTgl: y + "-" + m + "-" + "31"
+	});
+	//console.log(date);
+	dataPosisiKeuangan.clear();
+	API_REQUEST('posisi/keuangan', 'POST', token, '', date).done(function(res){
+		let jumlah = 0;
+		let TOTAL = 0;
+		var no = 1;
+		$.each(res, function(index, el) {
+			let d = el.create_at.split("T");
+			dataPosisiKeuangan.row.add([
+				no++,
+				d[0],
+				el.Role.role,
+				el.Role.id_role,
+				el.User.name,
+				`Rp `+formatNum(el.nominal)
+			]).draw();
+			jumlah += el.nominal
+			TOTAL += jumlah;
+		});
+		$('#totalPengeluaran').html('TOTAL : Rp '+formatNum(TOTAL));
+	});
+}
+
+$(document).on('submit', '#filterPosisiKeuangan', function(e){
+	e.preventDefault();
+
+	if (($('#fromTgl').val() == "" || $('#fromTgl').val() == "0")) {
+		Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Kolom "Dari Tanggal" Tidak Boleh Kosong.'
+    });
+	} else if ($('#toTgl').val() == "" || $('#toTgl').val() == "0") {
+		Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Kolom "Sampai Tanggal" Tidak Boleh Kosong.'
+    });
+	} else if (($('#fromTgl').val() == "" || $('#fromTgl').val() == "0") && ($('#toTgl').val() == "" || $('#toTgl').val() == "0")) {
+		Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Semua Kolom Tidak Boleh Kosong, Maka Data Sesuai Bulan Sekarang Akan Ditampilkan'
+    }, PosisiKeuangan());
+	} else {
+
+		var date = JSON.stringify({
+			fromTgl:$('#fromTgl').val(),
+			ToTgl: $('#toTgl').val()
+		});
+
+		API_REQUEST('posisi/keuangan', 'POST', token, '', date).done(function(res){
+			if (res.length == 0) {
+				dataPosisiKeuangan.clear();
+			} else {
+				let jumlah = 0;
+				let TOTAL = 0;
+				var no = 1;
+				dataPosisiKeuangan.clear();
+				$.each(res, function(index, el) {
+					let d = el.create_at.split("T");
+					dataPosisiKeuangan.row.add([
+						no++,
+						d[0],
+						el.Role.role,
+						el.Role.id_role,
+						el.User.name,
+						`Rp `+formatNum(el.nominal)
+					]).draw();
+					jumlah += el.nominal
+					TOTAL += jumlah;
+				});
+				$('#totalPengeluaran').html('TOTAL : Rp '+formatNum(TOTAL));
+			}
+		});
+	}
+});
+</script>
+<!--#include file="all-foot.html"-->

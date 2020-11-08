@@ -1,0 +1,55 @@
+<div class="modal fade" id="modalEditAturSubAyatJurnalRAPBMRab" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel"
+  aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticModalLabel">Atur Ayat Jurnal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="EditAturSubAyatJurnalRAPBMRab" method="POST" novalidate="novalidate">
+          <input type="hidden" id="id_sub_ayat_jurnal_rapbm_rab_e" name="">
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Ayat Jrunal</label>
+            <select class="select2 form-control" id="optionAyatJurnal_e"></select>
+          </div>
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Sub Ayat Jurnal</label>
+            <input id="sub_ayat_jurnal_e" name="ayat_jurnal" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+          </div>
+          <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
+            <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+          </button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$('#modalEditAturSubAyatJurnalRAPBMRab').on('shown.bs.modal', function (e) {
+  var button = $(e.relatedTarget);
+  var id = button.data('id');
+  API_REQUEST("sub-ayat-jurnal-rapbm-rab/by/id/", "GET", token, id, "").done(function(res){
+    var button = $(e.relatedTarget);
+    var id = button.data('id');
+    var optionAyatJurnal = '';
+    API_REQUEST('all/ayat-jurnal-rapbm-rab', 'GET', token, '', '').done((rs) => {
+      $.each(rs, function(i, el) {
+        if(el.id_ayat_jurnal_rapbm_rab == res.ayat_jurnal_rapbm_rab_id) {
+          optionAyatJurnal += `<option value="${el.id_ayat_jurnal_rapbm_rab}" selected>${el.ayat_jurnal_rapbm_rab}</option>`;
+        } else {
+          optionAyatJurnal += `<option value="${el.id_ayat_jurnal_rapbm_rab}">${el.ayat_jurnal_rapbm_rab}</option>`;
+        }
+      });
+      $("#optionAyatJurnal_e").html(optionAyatJurnal);
+    });
+    $('#id_sub_ayat_jurnal_rapbm_rab_e').val(id);
+    $('#sub_ayat_jurnal_e').val(res.sub_ayat_jurnal_rapbm_rab);
+  });
+});
+</script>

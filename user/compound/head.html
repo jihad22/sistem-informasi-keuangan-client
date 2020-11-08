@@ -49,7 +49,7 @@
       text: 'Sesi Anda Habis, Silahkan Login Kembali!'
     },
 		  Cookies.remove('tokenAccess'),
-		  window.location.href = "/simamin/");
+		  window.location.href = "/simamin/login");
 	} else {
 	  API_REQUEST("check/user/", "GET", token, GenerateToken().Username, '').done(function(){
 	    $('.full-name').html(GenerateToken().Name);

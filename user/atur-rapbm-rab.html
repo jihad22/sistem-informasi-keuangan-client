@@ -1,0 +1,249 @@
+<!--#include file="all-head.html"-->
+<h3 class="title">Ayat Jurnal</h3>
+<div class="row">
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <form id="aturAyatJurnalRAPBMRab" method="POST" novalidate="novalidate">
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Jenis Pendapatan</label>
+            <select class="select2 form-control" id="optionJenisPendapatan"></select>
+          </div>
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Ayat Jurnal</label>
+            <input id="ayat_jurnal_rapbm_rab" name="" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+          </div>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-dark btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="table-responsive-lg">
+      <table id="dataAyatJurnalRAPBMRab" class="table table-sm table-hover table-bordered table-striped"></table>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $('#appendModalHere').load("modals/modal-edit-atur-ayat-jurnal-rapbm-rab.html");
+  API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done((response) => {
+    var optionJp = '';
+    $.each(response, (i, el) => {
+      optionJp += `<option value="${ el.id_jenis_pendapatan }">${ el.jenis_pendapatan }</option>`;
+    });
+    $('#optionJenisPendapatan').html(`<option value="0">Pilih Jenis Pendapatan</option>`+optionJp);
+  });
+  dataAyatJurnalRAPBMRab = $('#dataAyatJurnalRAPBMRab').DataTable({
+    processing: true,
+    columns : [
+      {title:"No"},
+      {title:"Jenis Pendapatan"},
+      {title:"Ayat Jurnal"},
+      {title:"Tindakan"}
+    ]
+  });
+  ShowDataAyatJurnalRAPBMRab();
+});
+function ShowDataAyatJurnalRAPBMRab(){
+  var optionAyatJurnal = '';
+  dataAyatJurnalRAPBMRab.clear();
+  API_REQUEST('all/ayat-jurnal-rapbm-rab', 'GET', token, '', '').done((res) => {
+    var no = 1;
+    $.each(res, function(i, el) {
+      dataAyatJurnalRAPBMRab.row.add([
+        no++,
+        el.JenisPendapatan.jenis_pendapatan,
+        el.ayat_jurnal_rapbm_rab,
+        `<div class="btn-group" role="group">
+          <button class="text-white btn btn-sm btn-warning" data-id="${ el.id_ayat_jurnal_rapbm_rab }" data-toggle="modal" data-target="#modalEditAturAyatJurnalRAPBMRab"><i class="fa fa-edit"></i> Ubah</button>
+          <button class="text-white btn btn-sm btn-danger" id="deleteAyatJurnakRAPBMRab" data-id="${ el.id_ayat_jurnal_rapbm_rab }"><i class="fa fa-trash"></i> Hapus</button>
+        </div>`
+      ]).draw();
+      optionAyatJurnal += `<option value="${el.id_ayat_jurnal_rapbm_rab}">${el.ayat_jurnal_rapbm_rab}</option>`;
+    });
+    $('#optionAyatJurnal').html(optionAyatJurnal);
+  });
+}
+//simpan
+$(document).on('submit', '#aturAyatJurnalRAPBMRab', function(e){
+  e.preventDefault();
+  var data = JSON.stringify({
+    id_ayat_jurnal_rapbm_rab:"",
+    jenis_pendapatan_id: $('#optionJenisPendapatan option:selected').val(),
+    ayat_jurnal_rapbm_rab: $('#ayat_jurnal_rapbm_rab').val()
+  });
+  API_REQUEST('add/ayat-jurnal-rapbm-rab', 'POST', token, '', data).done((res) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Ok',
+      text: 'Created'
+    }, ShowDataAyatJurnalRAPBMRab());
+  });
+});
+//ubah
+$(document).on('submit', '#editAturAyatJurnalRAPBMRab', function(e){
+  e.preventDefault();
+  var data = JSON.stringify({
+    id_ayat_jurnal_rapbm_rab_e : parseInt($('#id_ayat_jurnal_rapbm_rab_e').val()),
+    jenis_pendapatan_id_e : $('#optionJenisPendapatan_e option:selected').val(),
+    ayat_jurnal_rapbm_rab_e : $('#ayat_jurnal_rapbm_rab_e').val()
+  });
+  //console.log(data);
+  API_REQUEST('update/ayat-jurnal-rapbm-rab', 'PUT', token, '', data).done((res) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Ok',
+      text: 'Created'
+    }, ShowDataAyatJurnalRAPBMRab());
+  });
+});
+//hapus
+$(document).on('click', '#deleteAyatJurnakRAPBMRab', function(e) {
+  e.preventDefault()
+  var id = $(this).data('id');
+  Swal.fire({
+    title: 'Apakah anda yakin menghapus data ini?',
+    text: '',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+    closeOnConfirm: false
+  }).then((result) => {
+    if (result.value == true) {
+      API_REQUEST('delete/ayat-jurnal-rapbm-rab/', 'DELETE', token, id, '').done(function () {
+        Swal.fire({
+          icon: 'success',
+          title: 'Ok',
+          text: 'Deleted'
+        }, ShowDataAyatJurnalRAPBMRab());
+      });
+    } else {
+      result.dismiss;
+    }
+  });
+})
+</script>
+
+<h3 class="title">Sub Ayat Jurnal</h3>
+<div class="row">
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <form id="aturSubAyatJurnalRAPBMRab" method="POST" novalidate="novalidate">
+          <div class="form-group">
+            <label for="optionAyatJurnal" class="control-label mb-1">Ayat Jrunal</label>
+            <select class="select2 form-control" id="optionAyatJurnal"></select>
+          </div>
+          <div class="form-group">
+            <label for="sub_ayat_jurnal" class="control-label mb-1">Sub Ayat Jurnal</label>
+            <input id="sub_ayat_jurnal" name="ayat_jurnal" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+          </div>
+          <button id="payment-button" type="submit" class="btn btn-lg btn-success btn-block">
+            <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="table-responsive-lg">
+      <table id="dataSubAyatJurnalRAPBMRab" class="table table-sm table-hover table-bordered table-striped"></table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#appendModalHereSlot').load('modals/modal-edit-atur-sub-ayat-jurnal-rapbm-rab.html');
+  dataSubAyatJurnalRAPBMRab = $('#dataSubAyatJurnalRAPBMRab').DataTable({
+    processing: true,
+    columns : [
+      {title:"No"},
+      {title:"Ayat Jurnal"},
+      {title:"Sub Ayat Jurnal"},
+      {title:"Tindakan"}
+    ]
+  });
+  ShowSubAyatJurnalRAPBMRab();
+});
+function ShowSubAyatJurnalRAPBMRab(){
+  dataSubAyatJurnalRAPBMRab.clear();
+  API_REQUEST('all/sub-ayat-jurnal-rapbm-rab', 'GET', token, '', '').done(function(response){
+    let no = 1;
+    $.each(response, function(i, e){
+      dataSubAyatJurnalRAPBMRab.row.add([
+        no++,
+        e.AyatJurnalRAPBMRab.ayat_jurnal_rapbm_rab,
+        e.sub_ayat_jurnal_rapbm_rab,
+        `<div class="btn-group" role="group">
+          <button class="text-white btn btn-sm btn-warning" data-id="${ e.id_sub_ayat_jurnal_rapbm_rab }" data-toggle="modal" data-target="#modalEditAturSubAyatJurnalRAPBMRab"><i class="fa fa-edit"></i> Ubah</button>
+          <button class="text-white btn btn-sm btn-danger" id="deleteSubAyatJurnalRAPBMRab" data-id="${ e.id_sub_ayat_jurnal_rapbm_rab }"><i class="fa fa-trash"></i> Hapus</button>
+        </div>`
+      ]).draw();
+    });
+  });
+}
+$(document).on('submit', '#aturSubAyatJurnalRAPBMRab', function(e){
+  e.preventDefault();
+  var data = JSON.stringify({
+    ayat_jurnal_rapbm_rab_id : parseInt($("#optionAyatJurnal option:selected").val()),
+    sub_ayat_jurnal_rapbm_rab : $("#sub_ayat_jurnal").val()
+  });
+  API_REQUEST('add/sub-ayat-jurnal-rapbm-rab','POST',token,'',data).done(function(){
+    Swal.fire({
+      icon: 'success',
+      title: 'Ok',
+      text: 'Created'
+    }, ShowSubAyatJurnalRAPBMRab());
+  })
+});
+$(document).on('click', '#deleteSubAyatJurnalRAPBMRab', function(e){
+  e.preventDefault();
+  var id = $(this).data('id');
+  Swal.fire({
+    title: 'Apakah anda yakin menghapus data ini?',
+    text: '',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!',
+    closeOnConfirm: false
+  }).then((result) => {
+    if (result.value == true) {
+      API_REQUEST('delete/sub-ayat-jurnal-rapbm-rab/', 'DELETE', token, id, '').done(function () {
+        Swal.fire({
+          icon: 'success',
+          title: 'Ok',
+          text: 'Deleted'
+        }, ShowSubAyatJurnalRAPBMRab());
+      });
+    } else {
+      result.dismiss;
+    }
+  });
+});
+$(document).on('submit', '#EditAturSubAyatJurnalRAPBMRab', function(e){
+  e.preventDefault();
+  var data = JSON.stringify({
+    id_sub_ayat_jurnal_rapbm_rab : parseInt($('#id_sub_ayat_jurnal_rapbm_rab_e').val()),
+    sub_ayat_jurnal_rapbm_rab : $('#sub_ayat_jurnal_e').val(),
+    ayat_jurnal_rapbm_rab_id : parseInt($('#optionAyatJurnal_e option:selected').val())
+  });
+  API_REQUEST('update/sub-ayat-jurnal-rapbm-rab','PUT',token,'',data).done(function(){
+    Swal.fire({
+      icon: 'success',
+      title: 'Ok',
+      text: 'Created'
+    }, ShowSubAyatJurnalRAPBMRab());
+  })
+});
+</script>
+<!--#include file="all-foot.html"-->

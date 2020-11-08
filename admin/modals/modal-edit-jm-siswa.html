@@ -1,0 +1,57 @@
+<div class="modal fade" id="modalJmSiswa" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel"
+  aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ubah Jumlah Siswa</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="submitEditJumlahSiswa" method="POST" novalidate="novalidate">
+          <input type="hidden" id="id_jm_siswa_e" value="" name="">
+          <div class="form-group">
+            <label for="" class="control-label mb-1">T.A</label>
+            <select class="form-control" id="optionTahunAjaran_e"></select>
+          </div>
+          <div class="form-group">
+            <label for="kelas" class="control-label mb-1">Kelas</label>
+            <input id="kelas_e" name="" type="text" class="form-control" aria-required="true" aria-invalid="false" value="">
+          </div>
+          <div class="form-group">
+            <label for="jumlah_siswa" class="control-label mb-1">Jumlah Siswa</label>
+            <input id="jumlah_siswa_e" name="" type="number" class="form-control" aria-required="true" aria-invalid="false" value="">
+          </div>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp;
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $('#modalJmSiswa').on('shown.bs.modal', (e) => {
+    var button = $(e.relatedTarget);
+    var id = button.data('id');
+    API_REQUEST('jumlah-siswa/by/', 'GET', token, parseInt(id), '').done(function(res) {
+      API_REQUEST('all/tahun-ajaran', 'GET', token, '', '').done(function(r){
+        let optionTA = '';
+        $.each(r, function(i, e) {
+          if(res.tahun_ajaran_id == e.id_tahun_ajaran) {
+            optionTA += `<option value="${ e.id_tahun_ajaran }" selected>${ e.tahun_ajaran }</option>`;
+          } else {
+            optionTA += `<option value="${ e.id_tahun_ajaran }">${ e.tahun_ajaran }</option>`;
+          }
+        });
+        $('#optionTahunAjaran_e').html(`<option value="0">Pilih T.A</option>` + optionTA);
+      });
+      $('#id_jm_siswa_e').val(res.id_jm_siswa);
+      $('#kelas_e').val(res.kelas);
+      $('#jumlah_siswa_e').val(res.jumlah_siswa);
+    });
+  });
+</script>

@@ -1,0 +1,26 @@
+<!-- Bootstrap 4 -->
+<script src="../assets/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 -->
+<script src="../assets/adminlte/plugins/select2/js/select2.full.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="../assets/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../assets/adminlte/dist/js/adminlte.js"></script>
+<script src="../assets/js/jquery.maskMoney.min.js"></script>
+<script src="../assets/adminlte/plugins/inputmask/min/jquery.inputmask.bundle.min.js"></script>
+<script>
+$(document).ready(function(){
+	$('.yearMask').inputmask('yyyy', { 'placeholder':'YYYY' })
+	$('.datemask').inputmask('yyyy-mm-dd', { 'placeholder':'yyyy-dd-mm' })
+	$('.currency').maskMoney({precision:0});
+	$('select.select2').select2({
+    theme: 'bootstrap4'
+  })
+  /*$(".datatables").DataTable({
+  	"processing":true,
+    "dom":"<'row'<'col-sm-4'l><'col-sm-4'B><'col-sm-4'f>><'row't><'row'<'col-sm-6'i><'col-sm-6'p>>"
+  });*/
+});
+</script>
+</body>
+</html>

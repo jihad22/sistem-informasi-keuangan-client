@@ -1,41 +1,107 @@
-<!DOCTYPE html>
-<html lang="en">
+<!--#include file="components/head.html"-->
 
-  <head>
-    <!-- Required meta tags-->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Title Page-->
-    <title>MA MUALLIMIN NW PANCOR</title>
-    <link rel="stylesheet" href="require.css" media="all">
-    <script src="assets/vendor/jquery-3.2.1.min.js"></script>
-    <script src="assets/js/jquery.cookie.js"></script>
-    <script type="text/javascript" src="admin/components/apps.js"></script>
-  </head>
-  <body class="animsition">
-  <!-- CONTENT -->
-    <div class="page-wrapper">
-      <div class="text-center">I AM OK. NO PROBLEMS...!</div>
-    </div>
-  <!-- END CONTENT -->
-  <!-- load html file -->
-  <!-- Jquery JS-->
-  <!-- Bootstrap JS-->
-  <script src="assets/vendor/bootstrap-4.1/popper.min.js"></script>
-  <script src="assets/vendor/bootstrap-4.1/bootstrap.min.js"></script>
-  <!-- assets/vendor JS -->
-  <script src="assets/vendor/slick/slick.min.js"></script>
-  <script src="assets/vendor/wow/wow.min.js"></script>
-  <script src="assets/vendor/animsition/animsition.min.js"></script>
-  <script src="assets/vendor/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
-  <script src="assets/vendor/counter-up/jquery.waypoints.min.js"></script>
-  <script src="assets/vendor/counter-up/jquery.counterup.min.js"></script>
-  <script src="assets/vendor/circle-progress/circle-progress.min.js"></script>
-  <script src="assets/vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
-  <script src="assets/vendor/chartjs/Chart.bundle.min.js"></script>
-  <script src="assets/vendor/select2/select2.min.js"></script>
-  <!-- Main JS-->
-  <script src="assets/js/main.js"></script>
-  <script src="main.js"></script>
-  </body>
-</html>
+<div class="row justify-content-center" style="padding-top: 150px;">
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">Masuk Untuk Memulai Sesi</p>
+      <div id="alertSess" class="text-center text-danger mb-3"></div>
+      <form action="" method="" id="loginForm">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="username" class="form-control" name="">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" class="form-control" name="">
+        </div>
+        <button class="btn btn-block btn-success" type="submit">SIGN IN</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  if (Cookies.get('tokenAccess') === undefined || CekTokenExpired() === true) {
+    let alertSess = `<i class="icon fas fa-ban"></i> Maaf Sesi Anda Habis Mohon Login Kembali`;
+    $('#alertSess').html(alertSess);
+    Cookies.remove('accessToken', {path:'/'});
+  }
+  
+  $(document).on('submit', '#loginForm', function(e){
+    e.preventDefault();
+    let data = JSON.stringify({
+      username:$('#username').val(),
+      password:$('#password').val()
+    });
+   
+    $.ajax({
+      url: 'http://localhost:9000/check/auth',
+      type: 'POST',
+      dataType:'JSON',
+      cache: true,
+      data: data,
+      crossDomain: true,
+      beforeSend: function (xhr) {
+        xhr.withCredentials = true;
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+        //xhr.setRequestHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+        xhr.setRequestHeader("Content-Type", "application/json, *");
+        xhr.setRequestHeader("x-access-token-to-my-site");
+      }
+    }).done(function(response){
+      Swal.fire({
+        icon: 'success',
+        title: 'Ok',
+        text: 'Login Success'
+      }, Cookies.set('tokenAccess', response.token, {path:'/', secure:true, sameSite:'strict'}));
+      //pecah isi token sesuai objeknya
+      var base64 = atob(Cookies.get('tokenAccess').split('.')[1]);
+      var userData = JSON.parse(base64);
+      if(userData.RoleID == "A" || userData.RoleID == "B" || userData.RoleID == "KM" || userData.RoleID == "KS") {
+        window.location.href = "admin/";
+      } else {
+        window.location.href = "user/";
+      }
+    }).fail(function(err){
+      switch(err.status) {
+        case 0 :
+          Swal.fire({
+            icon: 'error',
+            title: 'Error Status : ' + err.status,
+            text: 'Please Check Your Internet Connection!'
+          });
+        break;
+        case 500 :
+          Swal.fire({
+            icon: 'error',
+            title: 'Error Status : ' + err.status,
+            text: 'Internal Server Error!'
+          });
+        break;
+        case 401 :
+          Swal.fire({
+            icon: 'error',
+            title: 'Error Status : ' + err.status,
+            text: 'Unauthorized!'
+          }, Cookies.remove('accessToken', {path:'/'}));
+        break;
+        case 404 :
+          Swal.fire({
+            icon: 'error',
+            title: 'Error Status : ' + err.status,
+            text: 'Not Found!'
+          });
+        break;
+        case 405 :
+          Swal.fire({
+            icon: 'error',
+            title: 'Error Status : ' + err.status,
+            text: 'Method Not Allowed!'
+          });
+        break;
+      }
+    });
+  });
+</script>
+
+<!--#include file="components/script.html"-->

@@ -1,0 +1,140 @@
+<!--#include file="all-head.html"-->
+
+<div class="row">
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <form id="formSumberPendapatan" method="POST" novalidate="novalidate">
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Jenis Pendapatan</label>
+            <select class="select2 form-control" id="optionJenisPendapatan"></select>
+          </div>
+          <div class="form-group">
+            <label for="" class="control-label mb-1">Sumber Pendapatan</label>
+            <input id="ayat_jurnal_rapbm_pendapatan" name="sumber_pendapatan" type="text" class="form-control" aria-required="true"aria-invalid="false" value="">
+            <small class="text-muted text-justify">Sumber Pendapatan Sekolah Seperti Bimbingan atau Seperti Usaha</small>
+          </div>
+          <hr>
+          <div>
+            <button id="payment-button" type="submit" class="btn btn-lg btn-dark btn-block">
+              <i class="fa fa-save fa-lg"></i>&nbsp; SIMPAN
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="table-responsive-lg">
+      <table class="datatables table table-sm table-hover table-bordered table-striped">
+        <thead class="bg-dark">
+          <tr>
+            <th>No</th>
+            <th>Jenis Pendapatan</th>
+            <th>Sumber</th>
+            <th>Tindakan</th>
+          </tr>
+        </thead>
+        <tbody id="dataSumberPendapatan"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  $('#appendModalHere').load('modals/modal-edit-atur-ayat-jurnal-rapbm-pendapatan.html');
+  dataRapbmPendapatan = $('.datatables').DataTable();
+  
+  AllRAPBMPendapatan();
+
+  API_REQUEST('all/jenis-pendapatan', 'GET', token, '', '').done((response) => {
+    var optionJp = '';
+    $.each(response, (i, el) => {
+      optionJp += `<option value="${ el.id_jenis_pendapatan }">${ el.jenis_pendapatan }</option>`;
+    });
+    $('#optionJenisPendapatan').html(`<option value="0">Pilih Jenis Pendapatan</option>`+optionJp);
+  });
+});
+
+function AllRAPBMPendapatan(){
+  dataRapbmPendapatan.clear();
+  API_REQUEST('all/ayat-jurnal-rapbm-pendapatan', 'GET', token, '', '').done(function(response){
+    var no = 1;
+    $.each(response, (i, el) => {
+      dataRapbmPendapatan.row.add([
+        no++,
+        el.JenisPendapatan.jenis_pendapatan,
+        el.ayat_jurnal_rapbm_pendapatan,
+        `<div class="btn-group" role="group">
+          <button class="text-white btn btn-sm btn-warning" data-id="${ el.id_ayat_jurnal_rapbm_pendapatan }" data-toggle="modal" data-target="#modalEditAyatJurnalRAPBMPendapatan"><i class="fa fa-edit"></i> Ubah</button>
+          <button class="text-white btn btn-sm btn-danger" id="deleteAyatJurnalRAPBMPendapatan" data-id="${ el.id_ayat_jurnal_rapbm_pendapatan }"><i class="fa fa-trash"></i> Hapus</button>
+        </div>`
+      ]).draw();
+    });
+  });
+}
+
+//submit sumber pendapatan
+$(document).on('submit', '#formSumberPendapatan', (e) => {
+  e.preventDefault();
+  var data = JSON.stringify({
+    id_ayat_jurnal_rapbm_pendapatan : "",
+    jenis_pendapatan_id : $('#optionJenisPendapatan option:selected').val(),
+    ayat_jurnal_rapbm_pendapatan : $('#ayat_jurnal_rapbm_pendapatan').val(),
+  });
+  API_REQUEST('add/ayat-jurnal-rapbm-pendapatan', 'POST', token, '', data).done((r)=>{
+    Swal.fire({
+      icon: 'success',
+      title: 'Ok',
+      text: 'Created'
+    }, AllRAPBMPendapatan());
+  })
+});
+//delete sumber pendapatan
+$(document).on('click', '#deleteAyatJurnalRAPBMPendapatan', function (e) {
+  e.preventDefault();
+  var id = $(this).data('id');
+  console.log(id);
+  Swal.fire({
+    title: 'Apakah anda yakin ingin menghapus data ini?',
+    text: '',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Hapus!',
+    closeOnConfirm: false
+  }).then((result) => {
+    if (result.value == true) {
+      API_REQUEST('delete/ayat-jurnal-rapbm-pendapatan/', 'DELETE', token, id, '').done(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Ok',
+          text: 'Deleted'
+        }, AllRAPBMPendapatan());
+      });
+    } else {
+      result.dismiss;
+    }
+  });
+});
+//form edit sumber pendapatan
+$(document).on('submit', '#editAyatJurnalRAPBMPendapatan', function(e) {
+  e.preventDefault();
+  var data = JSON.stringify({
+    id_ayat_jurnal_rapbm_pendapatan : parseInt($('#id_ayat_jurnal_rapbm_pendapatan_e').val()),
+    jenis_pendapatan_id : parseInt($('#optionJenisPendapatan_e option:selected').val()),
+    ayat_jurnal_rapbm_pendapatan : $('#ayat_jurnal_rapbm_pendapatan_e').val(),
+  });
+  API_REQUEST('update/ayat-jurnal-rapbm-pendapatan', 'PUT', token, '', data).done(function(e){
+    Swal.fire({
+      icon: 'success',
+      title: 'Ok',
+      text: 'Updated'
+    }, AllRAPBMPendapatan());
+  });
+});
+</script>
+
+<!--#include file="all-foot.html"-->

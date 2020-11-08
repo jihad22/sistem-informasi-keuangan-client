@@ -8,7 +8,7 @@ var token = Cookies.get('tokenAccess');
 function GenerateToken() {
   if (token == undefined) {
     Cookies.remove('tokenAccess');
-    window.location.href = "/simamin/login";
+    window.location.href = "/simamin/";
   } else {
     var base64 = atob(token.split('.')[1]);
     var response = JSON.parse(base64);
@@ -32,11 +32,13 @@ function CekTokenExpired() {
     return false
   }
 }
+
 //memformat angka menjadi angka rupiah
 function formatNum(num) {
   var angka = new Intl.NumberFormat('ID').format(num);
   return angka
 }
+
 //remove separator angka pada inputan nominal
 function removeCommaSeparator(selector) {
   var angka = $(selector).val();
@@ -45,9 +47,10 @@ function removeCommaSeparator(selector) {
 }
 
 //ambil karakter awal di setiap kata setelah spasi
+//gunakan untuk membuat ID jenis pendapatan
 function firstChar(str) {
   var kalimat = str.toUpperCase();
-  var matches = kalimat.match(/\b(\w)/g); // ['J','S','O','N']
+  var matches = kalimat.match(/\b(\w)/g);
   return matches.join('');
 }
 
@@ -90,7 +93,7 @@ var API_REQUEST = function (Url, Method, token, UrlParam, Data) {
           title: 'Error Status : ' + err.status,
           text: 'Bad Request!'
         },Cookies.remove('accessToken', {path:'/'}),
-        window.location.href = "/simamin/login");
+        window.location.href = "/simamin/");
       break;
       case 401 :
         Swal.fire({
@@ -99,7 +102,7 @@ var API_REQUEST = function (Url, Method, token, UrlParam, Data) {
           text: 'Unauthorized!'
         }, 
         Cookies.remove('accessToken', {path:'/'}),
-        window.location.href = "/simamin/login");
+        window.location.href = "/simamin/");
       break;
       case 404 :
         Swal.fire({
@@ -119,6 +122,7 @@ var API_REQUEST = function (Url, Method, token, UrlParam, Data) {
 	});
 };
 
+//gunakan untun pemilihan satuan pada RAPBM
 var satuan = new Array(
   "kg","gr","mg", 
   "liter",
@@ -127,3 +131,29 @@ var satuan = new Array(
   "TB","GB","MB","Byte","Bit",
   "Hari","Bulan","Jam"
 );
+//rumus untuk RAPBM
+function Rumus(nominal, jumlahSiswa, item1, item2){
+  //console.log(nominal+", "+jumlahSiswa+", "+item1+", "+item2);
+  let jumlah = 0;
+  if ((jumlahSiswa != 0) && (item1 == 0 || item1 == "") && (item2 == 0 || item1 == "")) {
+    jumlah = nominal * jumlahSiswa;
+  } 
+  else if ((jumlahSiswa == 0) && (item1 != 0) && (item2 == 0 || item1 == "")) {
+    jumlah = nominal * item1;
+  }
+  else if ((jumlahSiswa == 0) && (item1 == 0 || item1 == "") && (item2 != 0)) {
+    jumlah = nominal * item2;
+  }
+  else if ((jumlahSiswa != 0) && (item1 != 0) && (item2 == 0 || item1 == "")) {
+    jumlah = nominal * jumlahSiswa * item1;
+  }
+  else if ((jumlahSiswa == 0) && (item1 != 0) && (item2 != 0)) {
+    jumlah = nominal * item1 * item2;
+  }
+  else if ((jumlahSiswa != 0) && (item1 != 0) && (item2 != 0)) {
+    jumlah = nominal * jumlahSiswa * item1 * item2;
+  } else {
+    jumlah = nominal;
+  }
+  return jumlah;
+}
